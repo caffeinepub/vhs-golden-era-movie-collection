@@ -1,12 +1,11 @@
 {
-  "name": "VHS Golden Era Movie Collection",
-  "short_name": "VHS Collection",
-  "description": "Your personal 1980s retro movie collection",
+  "name": "Кино 80-х - Ретро Коллекция",
+  "short_name": "Кино 80-х",
+  "description": "Коллекция классических фильмов 80-х годов с аутентичной ретро-эстетикой",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1a1a",
-  "theme_color": "#1a1a1a",
-  "orientation": "portrait-primary",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
   "icons": [
     {
       "src": "/assets/generated/app-icon.dim_192x192.png",

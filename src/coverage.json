@@ -1,82 +1,80 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-07T08:17:02.564Z",
+  "generatedAt": "2026-02-07T09:14:36.227Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 3,
-    "implemented": 3,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add Progressive Web App (PWA) support so the catalog can be installed as a home-screen app icon on iOS and Android, including a web app manifest, required icons, and appropriate meta tags.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/public/manifest.webmanifest",
-          "frontend/public/assets/generated/app-icon.dim_512x512.png",
-          "frontend/public/assets/generated/app-icon.dim_192x192.png",
-          "frontend/public/assets/generated/app-icon-maskable.dim_512x512.png",
-          "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
-          "frontend/index.html"
-        ],
-        "matchedFiles": [
-          "frontend/public/manifest.webmanifest",
-          "frontend/public/assets/generated/app-icon.dim_512x512.png",
-          "frontend/public/assets/generated/app-icon.dim_192x192.png",
-          "frontend/public/assets/generated/app-icon-maskable.dim_512x512.png",
-          "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
-          "frontend/index.html"
-        ]
+        "summary": "Add a lightweight backend health endpoint that can be called without authentication so the frontend can distinguish between (a) backend reachable and (b) backend stopped/unavailable.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Implement a service worker to enable offline-capable app-shell behavior (cache static assets so the installed app can load a basic UI while offline), without modifying immutable entry files (e.g., frontend/src/main.tsx).",
+        "summary": "Implement a dedicated full-page 'Backend unavailable' recovery UI that appears when core queries fail due to a stopped canister or actor initialization failure, and provide clear recovery actions (Reload, Retry) without leaving the user on a broken screen.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/sw.js",
-          "frontend/src/App.tsx",
-          "frontend/src/components/MovieGrid.tsx"
+          "frontend/src/components/BackendUnavailableScreen.tsx",
+          "frontend/src/context/BackendAvailabilityContext.tsx",
+          "frontend/src/utils/errors.ts",
+          "frontend/src/components/MovieGrid.tsx",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/public/sw.js",
-          "frontend/src/App.tsx",
-          "frontend/src/components/MovieGrid.tsx"
+          "frontend/src/components/BackendUnavailableScreen.tsx",
+          "frontend/src/context/BackendAvailabilityContext.tsx",
+          "frontend/src/utils/errors.ts",
+          "frontend/src/components/MovieGrid.tsx",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/App.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Add an in-app, English help entry that explains how to install the catalog on mobile (Android Chrome and iOS Safari), placed in an existing discoverable UI location (e.g., Footer next to the publishing help).",
+        "summary": "Add a startup connectivity check (using the new backend health endpoint) that runs before enabling movie/genre queries, and route query failures into the recovery UI so users can reliably 'restore' the app after transient deployment/canister restarts.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/InstallHelpDialog.tsx",
-          "frontend/src/components/Footer.tsx"
+          "frontend/src/hooks/useBackendHealth.ts",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/context/BackendAvailabilityContext.tsx",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/InstallHelpDialog.tsx",
-          "frontend/src/components/Footer.tsx"
+          "frontend/src/hooks/useBackendHealth.ts",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/context/BackendAvailabilityContext.tsx",
+          "frontend/src/App.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.html",
-    "frontend/public/assets/generated/app-icon-maskable.dim_512x512.png",
-    "frontend/public/assets/generated/app-icon.dim_192x192.png",
-    "frontend/public/assets/generated/app-icon.dim_512x512.png",
-    "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
-    "frontend/public/manifest.webmanifest",
-    "frontend/public/sw.js",
     "frontend/src/App.tsx",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/InstallHelpDialog.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/BackendUnavailableScreen.tsx",
+    "frontend/src/components/Header.tsx",
     "frontend/src/components/MovieGrid.tsx",
+    "frontend/src/context/BackendAvailabilityContext.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useBackendHealth.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/utils/errors.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

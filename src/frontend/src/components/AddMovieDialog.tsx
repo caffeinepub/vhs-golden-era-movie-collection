@@ -28,7 +28,7 @@ export default function AddMovieDialog() {
     const handleOpen = () => {
       // Guard: Check if user is authenticated before opening dialog
       if (!identity) {
-        toast.error('You must be logged in to add movies.');
+        toast.error('Вы должны войти в систему, чтобы добавлять фильмы.');
         return;
       }
       setOpen(true);
@@ -65,52 +65,51 @@ export default function AddMovieDialog() {
     setUploadProgress(uploadProgress.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
-    // Guard: Check authentication before submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Guard: Check if user is authenticated before submitting
     if (!identity) {
-      toast.error('You must be logged in to add movies.');
-      setOpen(false);
+      toast.error('Вы должны войти в систему, чтобы добавлять фильмы.');
       return;
     }
 
     if (!title.trim()) {
-      toast.error('Введите название фильма');
+      toast.error('Пожалуйста, введите название фильма');
       return;
     }
 
-    if (genres.length === 0) {
-      toast.error('Добавьте хотя бы один жанр');
+    if (photos.length === 0) {
+      toast.error('Пожалуйста, добавьте хотя бы одно фото');
       return;
     }
 
     try {
-      const photoBlobs: ExternalBlob[] = [];
-      
-      for (let i = 0; i < photos.length; i++) {
-        const file = photos[i];
-        const arrayBuffer = await file.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
-        
-        const blob = ExternalBlob.fromBytes(uint8Array).withUploadProgress((percentage) => {
-          setUploadProgress(prev => {
-            const newProgress = [...prev];
-            newProgress[i] = percentage;
-            return newProgress;
+      // Convert files to ExternalBlobs with progress tracking
+      const photoBlobs = await Promise.all(
+        photos.map(async (file, index) => {
+          const arrayBuffer = await file.arrayBuffer();
+          const uint8Array = new Uint8Array(arrayBuffer);
+          return ExternalBlob.fromBytes(uint8Array).withUploadProgress((percentage) => {
+            setUploadProgress(prev => {
+              const newProgress = [...prev];
+              newProgress[index] = percentage;
+              return newProgress;
+            });
           });
-        });
-        
-        photoBlobs.push(blob);
-      }
+        })
+      );
 
       await addMovie.mutateAsync({
-        title,
-        description,
+        title: title.trim(),
+        description: description.trim(),
         photos: photoBlobs,
         genres,
       });
 
-      toast.success('Фильм добавлен в коллекцию!');
+      toast.success('Фильм успешно добавлен в коллекцию!');
       
+      // Reset form
       setTitle('');
       setDescription('');
       setGenres([]);
@@ -126,21 +125,21 @@ export default function AddMovieDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="retro-panel max-w-3xl max-h-[90vh] overflow-y-auto shadow-retro-lg">
+      <DialogContent className="retro-panel border-3 border-retro-magenta shadow-retro-lg max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="retro-grid absolute inset-0 pointer-events-none opacity-10" />
         
-        <DialogHeader className="relative z-10 pb-6 border-b-3 border-retro-teal/50">
-          <DialogTitle className="text-4xl retro-heading text-retro-magenta retro-glow-magenta">
+        <DialogHeader className="relative z-10">
+          <DialogTitle className="text-3xl retro-heading text-retro-magenta retro-glow-magenta">
             ДОБАВИТЬ ФИЛЬМ
           </DialogTitle>
-          <DialogDescription className="text-base retro-body text-retro-teal mt-3">
-            Заполните информацию о фильме для добавления в коллекцию
+          <DialogDescription className="text-base retro-body text-foreground/90 mt-2">
+            Добавьте новый фильм в вашу коллекцию 80-х
           </DialogDescription>
         </DialogHeader>
 
-        <div className="retro-spacing-lg relative z-10 py-8">
-          <div className="retro-spacing-sm">
-            <Label htmlFor="title" className="text-lg retro-subheading text-retro-teal">
+        <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-retro-teal retro-subheading text-base">
               НАЗВАНИЕ *
             </Label>
             <Input
@@ -148,55 +147,60 @@ export default function AddMovieDialog() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Введите название фильма"
-              className="bg-background border-3 border-retro-teal text-foreground placeholder:text-muted-foreground h-14 text-base font-bold"
+              className="bg-background/90 border-2 border-retro-teal focus:border-retro-magenta h-12 text-base"
+              required
             />
           </div>
 
-          <div className="retro-spacing-sm">
-            <Label htmlFor="description" className="text-lg retro-subheading text-retro-teal">
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-retro-teal retro-subheading text-base">
               ОПИСАНИЕ
             </Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Краткое описание фильма"
+              placeholder="Введите описание фильма"
+              className="bg-background/90 border-2 border-retro-teal focus:border-retro-magenta min-h-[120px] text-base"
               rows={5}
-              className="bg-background border-3 border-retro-teal text-foreground placeholder:text-muted-foreground resize-none text-base retro-body"
             />
           </div>
 
-          <div className="retro-spacing-sm">
-            <Label className="text-lg retro-subheading text-retro-teal">ЖАНРЫ *</Label>
-            <div className="flex gap-4">
+          <div className="space-y-2">
+            <Label className="text-retro-teal retro-subheading text-base">
+              ЖАНРЫ
+            </Label>
+            <div className="flex gap-2">
               <Input
                 value={genreInput}
                 onChange={(e) => setGenreInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddGenre())}
-                placeholder="Введите жанр"
-                className="bg-background border-3 border-retro-teal text-foreground placeholder:text-muted-foreground h-14 text-base font-bold"
+                placeholder="Добавить жанр"
+                className="bg-background/90 border-2 border-retro-teal focus:border-retro-magenta h-12 text-base"
               />
               <Button
                 type="button"
                 onClick={handleAddGenre}
-                className="bg-retro-purple/40 hover:bg-retro-purple/60 border-3 border-retro-teal text-retro-teal h-14 px-8"
+                className="bg-retro-teal hover:bg-retro-teal/90 text-white retro-subheading px-6 h-12"
               >
-                <Plus className="w-6 h-6" />
+                <Plus className="w-5 h-5" />
               </Button>
             </div>
             {genres.length > 0 && (
-              <div className="flex flex-wrap gap-3 mt-5">
+              <div className="flex flex-wrap gap-2 mt-3">
                 {genres.map((genre) => (
                   <Badge
                     key={genre}
-                    className="bg-retro-purple/30 border-3 border-retro-teal text-retro-teal pr-2 py-2 text-sm retro-subheading"
+                    variant="outline"
+                    className="bg-retro-purple/20 border-2 border-retro-teal text-retro-teal text-sm retro-subheading pl-3 pr-2 py-1"
                   >
-                    {genre.toUpperCase()}
+                    {genre}
                     <button
+                      type="button"
                       onClick={() => handleRemoveGenre(genre)}
-                      className="ml-3 hover:text-retro-magenta transition-colors"
+                      className="ml-2 hover:text-retro-magenta"
                     >
-                      <X className="w-5 h-5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </Badge>
                 ))}
@@ -204,74 +208,82 @@ export default function AddMovieDialog() {
             )}
           </div>
 
-          <div className="retro-spacing-sm">
-            <Label className="text-lg retro-subheading text-retro-teal">
-              ФОТОГРАФИИ (до 3)
+          <div className="space-y-2">
+            <Label className="text-retro-teal retro-subheading text-base">
+              ФОТО * (макс. 3)
             </Label>
-            <div className="space-y-5">
-              {photos.length < 3 && (
-                <label className="flex items-center justify-center w-full h-48 border-3 border-dashed border-retro-teal cursor-pointer hover:border-retro-magenta transition-all bg-muted/40">
-                  <div className="text-center">
-                    <Upload className="w-12 h-12 mx-auto mb-4 text-retro-teal" />
-                    <span className="text-base retro-subheading text-retro-teal">
-                      НАЖМИТЕ ДЛЯ ЗАГРУЗКИ
-                    </span>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handlePhotoChange}
-                    className="hidden"
-                  />
-                </label>
-              )}
-
-              {photos.length > 0 && (
-                <div className="grid grid-cols-3 gap-5">
-                  {photos.map((photo, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-48 object-cover border-3 border-retro-teal retro-border-clip"
-                      />
-                      {uploadProgress[index] !== undefined && uploadProgress[index] < 100 && (
-                        <div className="absolute inset-0 bg-black/90 flex items-center justify-center">
-                          <span className="text-retro-teal text-lg retro-heading">{uploadProgress[index]}%</span>
-                        </div>
-                      )}
-                      <button
-                        onClick={() => handleRemovePhoto(index)}
-                        className="absolute -top-3 -right-3 bg-destructive hover:bg-destructive/90 text-white p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-retro"
-                        style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="border-2 border-dashed border-retro-teal hover:border-retro-magenta transition-colors p-6 text-center bg-background/50">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoChange}
+                className="hidden"
+                id="photo-upload"
+                disabled={photos.length >= 3}
+              />
+              <label
+                htmlFor="photo-upload"
+                className={`cursor-pointer flex flex-col items-center gap-3 ${
+                  photos.length >= 3 ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                <Upload className="w-12 h-12 text-retro-teal" />
+                <span className="text-retro-teal retro-body text-base">
+                  {photos.length >= 3 
+                    ? 'Достигнут лимит фото' 
+                    : 'Нажмите для загрузки фото'}
+                </span>
+              </label>
             </div>
-          </div>
-        </div>
 
-        <DialogFooter className="relative z-10 pt-6 border-t-3 border-retro-teal/50">
-          <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
-            className="bg-background border-3 border-retro-teal text-retro-teal hover:bg-muted retro-subheading px-8 h-14 text-base"
-          >
-            ОТМЕНА
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={addMovie.isPending}
-            className="bg-retro-magenta hover:bg-retro-magenta/90 text-white retro-heading retro-glow-button px-10 h-14 text-base"
-          >
-            {addMovie.isPending ? 'ДОБАВЛЕНИЕ...' : 'ДОБАВИТЬ'}
-          </Button>
-        </DialogFooter>
+            {photos.length > 0 && (
+              <div className="grid grid-cols-3 gap-4 mt-4">
+                {photos.map((photo, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={URL.createObjectURL(photo)}
+                      alt={`Предпросмотр ${index + 1}`}
+                      className="w-full h-32 object-cover border-2 border-retro-teal"
+                    />
+                    {uploadProgress[index] !== undefined && uploadProgress[index] < 100 && (
+                      <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                        <span className="text-retro-magenta retro-heading text-lg">
+                          {uploadProgress[index]}%
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePhoto(index)}
+                      className="absolute top-2 right-2 bg-destructive hover:bg-destructive/90 text-white p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              className="bg-background border-3 border-retro-teal text-retro-teal hover:bg-muted retro-subheading h-12 px-8"
+            >
+              ОТМЕНА
+            </Button>
+            <Button
+              type="submit"
+              disabled={addMovie.isPending || !title.trim() || photos.length === 0}
+              className="bg-retro-magenta hover:bg-retro-magenta/90 text-white retro-heading h-12 px-8 disabled:opacity-50"
+            >
+              {addMovie.isPending ? 'ДОБАВЛЕНИЕ...' : 'ДОБАВИТЬ ФИЛЬМ'}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

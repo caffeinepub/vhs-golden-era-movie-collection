@@ -38,7 +38,7 @@ export default function AuthControls() {
     <div className="flex items-center gap-4">
       {isAuthenticated && (
         <span className="text-sm retro-subheading text-retro-teal hidden md:block">
-          AUTHENTICATED
+          АВТОРИЗОВАН
         </span>
       )}
       <Button
@@ -51,16 +51,16 @@ export default function AuthControls() {
         } retro-heading px-6 h-12 text-sm transition-all disabled:opacity-50`}
       >
         {isLoggingIn ? (
-          <>LOGGING IN...</>
+          <>ВХОД...</>
         ) : isAuthenticated ? (
           <>
             <LogOut className="w-4 h-4 mr-2" />
-            LOG OUT
+            ВЫЙТИ
           </>
         ) : (
           <>
             <LogIn className="w-4 h-4 mr-2" />
-            LOG IN
+            ВОЙТИ
           </>
         )}
       </Button>

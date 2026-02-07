@@ -1,10 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import { useBackendAvailability } from '../context/BackendAvailabilityContext';
+import { isBackendUnavailableError } from '../utils/errors';
 import type { Movie, MovieId, PaginationInfo } from '../backend';
 import { ExternalBlob } from '../backend';
 
 export function useGetMovies(page: number) {
   const { actor, isFetching: actorFetching } = useActor();
+  const { state: backendState, reportUnavailable } = useBackendAvailability();
 
   const query = useQuery<Movie[]>({
     queryKey: ['movies', page],
@@ -18,9 +21,15 @@ export function useGetMovies(page: number) {
       console.log('[useGetMovies] Fetched', movies.length, 'movies');
       return movies;
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !actorFetching && backendState === 'available',
     placeholderData: (previousData) => previousData,
-    retry: 1,
+    retry: (failureCount, error) => {
+      if (isBackendUnavailableError(error)) {
+        reportUnavailable(error);
+        return false;
+      }
+      return failureCount < 1;
+    },
   });
 
   // Return custom state that properly reflects actor dependency
@@ -33,6 +42,7 @@ export function useGetMovies(page: number) {
 
 export function useGetPaginationInfo() {
   const { actor, isFetching: actorFetching } = useActor();
+  const { state: backendState, reportUnavailable } = useBackendAvailability();
 
   const query = useQuery<PaginationInfo>({
     queryKey: ['paginationInfo'],
@@ -46,8 +56,14 @@ export function useGetPaginationInfo() {
       console.log('[useGetPaginationInfo] Total pages:', info.totalPages);
       return info;
     },
-    enabled: !!actor && !actorFetching,
-    retry: 1,
+    enabled: !!actor && !actorFetching && backendState === 'available',
+    retry: (failureCount, error) => {
+      if (isBackendUnavailableError(error)) {
+        reportUnavailable(error);
+        return false;
+      }
+      return failureCount < 1;
+    },
   });
 
   // Return custom state that properly reflects actor dependency
@@ -60,6 +76,7 @@ export function useGetPaginationInfo() {
 
 export function useFilterByGenre(genre: string | null) {
   const { actor, isFetching: actorFetching } = useActor();
+  const { state: backendState, reportUnavailable } = useBackendAvailability();
 
   const query = useQuery<Movie[]>({
     queryKey: ['movies', 'genre', genre],
@@ -77,9 +94,15 @@ export function useFilterByGenre(genre: string | null) {
       console.log('[useFilterByGenre] Found', movies.length, 'movies');
       return movies;
     },
-    enabled: !!actor && !actorFetching && !!genre,
+    enabled: !!actor && !actorFetching && !!genre && backendState === 'available',
     placeholderData: (previousData) => previousData,
-    retry: 1,
+    retry: (failureCount, error) => {
+      if (isBackendUnavailableError(error)) {
+        reportUnavailable(error);
+        return false;
+      }
+      return failureCount < 1;
+    },
   });
 
   // Return custom state that properly reflects actor dependency
@@ -92,6 +115,7 @@ export function useFilterByGenre(genre: string | null) {
 
 export function useGetAllGenres() {
   const { actor, isFetching: actorFetching } = useActor();
+  const { state: backendState, reportUnavailable } = useBackendAvailability();
 
   const query = useQuery<string[]>({
     queryKey: ['genres'],
@@ -105,9 +129,15 @@ export function useGetAllGenres() {
       console.log('[useGetAllGenres] Fetched', genres.length, 'genres');
       return genres;
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !actorFetching && backendState === 'available',
     placeholderData: (previousData) => previousData,
-    retry: 1,
+    retry: (failureCount, error) => {
+      if (isBackendUnavailableError(error)) {
+        reportUnavailable(error);
+        return false;
+      }
+      return failureCount < 1;
+    },
   });
 
   // Return custom state that properly reflects actor dependency

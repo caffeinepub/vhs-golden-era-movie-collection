@@ -134,6 +134,11 @@ export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     addMovie(title: string, description: string, photoBlobs: Array<ExternalBlob>, genres: Array<string>): Promise<MovieId>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    backendHealthCheck(): Promise<{
+        message: string;
+        timestamp: Time;
+        caller: Principal;
+    }>;
     deleteMovie(id: MovieId): Promise<void>;
     filterByGenre(genre: string): Promise<Array<Movie>>;
     getAllGenres(): Promise<Array<string>>;
@@ -278,6 +283,24 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n10(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async backendHealthCheck(): Promise<{
+        message: string;
+        timestamp: Time;
+        caller: Principal;
+    }> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.backendHealthCheck();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.backendHealthCheck();
             return result;
         }
     }

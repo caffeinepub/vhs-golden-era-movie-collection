@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Make the catalog installable as a home-screen Progressive Web App (PWA) on iOS and Android, with basic offline app-shell support.
+**Goal:** Restore app usability when the backend canister is stopped or unreachable by detecting backend health and showing a dedicated recovery experience instead of a broken/empty UI.
 
 **Planned changes:**
-- Add a valid web app manifest served from the app origin, including required fields and icon entries.
-- Add/install PWA icon assets (including maskable and Apple touch icon) and wire them via manifest and HTML meta/link tags for installability on Android and iOS.
-- Implement and register a service worker (from an editable module) to cache static assets for an offline-capable app shell without impacting Internet Identity auth flows.
-- Add an in-app English “Install on phone” help entry in an existing discoverable UI location (e.g., Footer), with platform-specific steps for Android Chrome and iOS Safari, matching the app’s retro styling.
+- Backend: add an unauthenticated public query health endpoint in `backend/main.mo` that returns a simple “ok”/version-style response and never traps for anonymous callers.
+- Frontend: add a full-page “Backend unavailable” recovery UI that appears on stopped-canister errors or actor initialization failure, reusing the existing stopped-canister copy from `frontend/src/utils/errors.ts`.
+- Frontend: run a startup connectivity/health check before enabling movie/genre/pagination queries; show a non-blocking loading state while checking.
+- Frontend: route failed health checks and relevant query failures into the recovery UI; provide actions for **Reload** (full page refresh) and **Retry** (re-run health check and refetch queries without reload), returning to normal operation once backend is available.
 
-**User-visible outcome:** Users can install the catalog to their home screen on Android and iOS with correct icons/name, open it in standalone mode, and see a basic cached shell when offline, plus clear in-app instructions for installation.
+**User-visible outcome:** When the backend is stopped/unavailable, users see a clear full-page recovery screen with Reload/Retry instead of a broken app; once the backend is back, Retry restores normal browsing without requiring a hard refresh.

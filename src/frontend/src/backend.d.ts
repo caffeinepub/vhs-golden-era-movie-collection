@@ -41,6 +41,11 @@ export enum UserRole {
 export interface backendInterface {
     addMovie(title: string, description: string, photoBlobs: Array<ExternalBlob>, genres: Array<string>): Promise<MovieId>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    backendHealthCheck(): Promise<{
+        message: string;
+        timestamp: Time;
+        caller: Principal;
+    }>;
     deleteMovie(id: MovieId): Promise<void>;
     filterByGenre(genre: string): Promise<Array<Movie>>;
     getAllGenres(): Promise<Array<string>>;

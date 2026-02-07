@@ -10,9 +10,9 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-10 relative z-10">
         <div className="text-center retro-spacing-sm">
           <p className="text-retro-teal text-lg retro-subheading">
-            © 2026. BUILT WITH{' '}
+            © 2026. СОЗДАНО С{' '}
             <Heart className="inline w-6 h-6 text-retro-magenta" style={{ animation: 'retro-pulse 1.5s infinite' }} />{' '}
-            USING{' '}
+            ИСПОЛЬЗУЯ{' '}
             <a
               href="https://caffeine.ai"
               target="_blank"
@@ -23,7 +23,7 @@ export default function Footer() {
             </a>
           </p>
           <p className="text-retro-amber/80 text-base mt-4 retro-subheading retro-glow-amber">
-            ◄◄ REWIND • PLAY • FAST FORWARD ►►
+            ◄◄ ПЕРЕМОТКА • ВОСПРОИЗВЕДЕНИЕ • УСКОРЕННАЯ ПЕРЕМОТКА ►►
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-4">
             <PublishingHelpDialog />

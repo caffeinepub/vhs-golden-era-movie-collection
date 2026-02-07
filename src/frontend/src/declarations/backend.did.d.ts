@@ -64,6 +64,10 @@ export interface _SERVICE {
     MovieId
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'backendHealthCheck' : ActorMethod<
+    [],
+    { 'message' : string, 'timestamp' : Time, 'caller' : Principal }
+  >,
   'deleteMovie' : ActorMethod<[MovieId], undefined>,
   'filterByGenre' : ActorMethod<[string], Array<Movie>>,
   'getAllGenres' : ActorMethod<[], Array<string>>,

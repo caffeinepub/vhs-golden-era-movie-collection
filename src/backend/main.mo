@@ -37,6 +37,18 @@ actor {
     createdAt : Time.Time;
   };
 
+  public query ({ caller }) func backendHealthCheck() : async {
+    message : Text;
+    caller : Principal;
+    timestamp : Time.Time;
+  } {
+    {
+      message = "Backend health check successful";
+      caller;
+      timestamp = Time.now();
+    };
+  };
+
   public query ({ caller }) func getAuthStatus() : async { caller : Principal } {
     {
       caller = caller;

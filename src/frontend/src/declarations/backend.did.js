@@ -77,6 +77,17 @@ export const idlService = IDL.Service({
       [],
     ),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'backendHealthCheck' : IDL.Func(
+      [],
+      [
+        IDL.Record({
+          'message' : IDL.Text,
+          'timestamp' : Time,
+          'caller' : IDL.Principal,
+        }),
+      ],
+      ['query'],
+    ),
   'deleteMovie' : IDL.Func([MovieId], [], []),
   'filterByGenre' : IDL.Func([IDL.Text], [IDL.Vec(Movie)], ['query']),
   'getAllGenres' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
@@ -175,6 +186,17 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'backendHealthCheck' : IDL.Func(
+        [],
+        [
+          IDL.Record({
+            'message' : IDL.Text,
+            'timestamp' : Time,
+            'caller' : IDL.Principal,
+          }),
+        ],
+        ['query'],
+      ),
     'deleteMovie' : IDL.Func([MovieId], [], []),
     'filterByGenre' : IDL.Func([IDL.Text], [IDL.Vec(Movie)], ['query']),
     'getAllGenres' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),

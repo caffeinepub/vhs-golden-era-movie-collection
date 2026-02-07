@@ -1,30 +1,56 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-07T08:17:02.562Z",
-  "summary": "PWA manifest and install-related meta tags were added, a service worker was added and registered from App.tsx, and an in-app “Install on phone” help dialog was added in the Footer. However, the required icon image assets themselves are not shown as added in the diff summary (only referenced).",
+  "generatedAt": "2026-02-07T09:14:36.225Z",
+  "summary": "Core backend health endpoint and a frontend recovery screen/context were added, and data queries are gated on backend availability with retry/refetch logic. However, the initial 'checking' state UI is not clearly handled (risking a blank/empty experience), and the new recovery screen introduces new Russian user-facing copy despite the request to use English for new recovery UI text. Several unrequested features (PWA service worker, offline mode UI) also appear to have been added.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Include the required PWA icon assets (at least 192x192 and 512x512, plus a maskable icon, and an Apple touch icon) at the referenced paths.",
-      "reason": "The manifest and index.html reference icon files under /assets/generated/, but the diff summary does not show any added image files for these required icons, so installability may be incomplete.",
+      "id": "REQ-3",
+      "requirement": "On initial load, show a non-blocking loading state while performing the startup health check before enabling movie/genre/pagination queries (not a blank/empty screen).",
+      "reason": "The diff shows queries are disabled unless backendState === 'available', and BackendAvailabilityProvider starts in 'checking'. AppContent only switches to the recovery screen when state === 'unavailable'; there is no explicit loading UI for the 'checking' phase shown in the diff, which can result in core data queries not running and the UI potentially rendering without a clear loading state.",
       "evidence": [
-        "frontend/public/manifest.webmanifest",
-        "frontend/index.html"
+        "frontend/src/context/BackendAvailabilityContext.tsx",
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Use English for new user-facing recovery UI text (and avoid changing/adding localized strings unless required by the recovery UI).",
+      "reason": "The new full-page recovery UI introduces prominent new Russian copy for the title, buttons, and helper text (e.g., 'БЭКЕНД НЕДОСТУПЕН', 'ПОВТОРИТЬ', 'ПЕРЕЗАГРУЗИТЬ'), which conflicts with the build request constraint to use English for user-facing text in this recovery UI work.",
+      "evidence": [
+        "frontend/src/components/BackendUnavailableScreen.tsx"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.74,
+  "hallucinated_features": [
+    {
+      "description": "PWA service worker registration for offline support.",
+      "reason": "The build request focuses on backend stopped/unavailable recovery and explicitly lists non-goals unrelated to deployment monitoring; it does not request adding PWA/service worker behavior.",
+      "evidence": [
+        "frontend/src/App.tsx"
+      ]
+    },
+    {
+      "description": "Offline-mode UI/logic in the movie grid (online/offline event listeners and an 'offline mode' screen).",
+      "reason": "Offline detection and an offline experience were not requested; the request is specifically about backend canister stopped/unavailable recovery.",
+      "evidence": [
+        "frontend/src/components/MovieGrid.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.72,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.html",
-    "frontend/public/manifest.webmanifest",
-    "frontend/public/sw.js",
     "frontend/src/App.tsx",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/InstallHelpDialog.tsx",
+    "frontend/src/components/BackendUnavailableScreen.tsx",
+    "frontend/src/components/Header.tsx",
     "frontend/src/components/MovieGrid.tsx",
+    "frontend/src/context/BackendAvailabilityContext.tsx",
+    "frontend/src/hooks/useBackendHealth.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/utils/errors.ts",
     "project_state.json"
   ]
 }

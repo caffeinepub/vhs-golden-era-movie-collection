@@ -2,32 +2,23 @@
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
   "summary": "New project",
-  "architectural_notes": [
-    "Support PWA installation: add web app manifest and required assets/metadata so the catalog can be added to the phone home screen and opened like an app."
+  "architectural_notes": [],
+  "known_issues": [
+    "Deployment/build publish error occurred; user requested to restore/retry deployment."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Neon retro VHS-style app icon with a stylized cassette and glow (app-icon.dim_512x512.png)\n- Neon retro VHS-style app icon with a stylized cassette and glow (app-icon.dim_192x192.png)\n- Neon retro VHS-style app icon, maskable-safe with generous padding and centered design (app-icon-maskable.dim_512x512.png)\n- Apple touch icon variant in the same style (apple-touch-icon.dim_180x180.png)",
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-add-progressive-web-app-pwa-support-so-the-catalog-can-be-installed-as-a-home-screen-app-icon-on-ios-and-android-including-a-web-app-manifest-required-icons-and-appropriate-meta-tags",
-      "title": "Add Progressive Web App (PWA) support so the catalog can be installed as a home-screen app icon on iOS and Android, including a web app manifest, required icons, and appropriate meta tags.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-service-worker-to-enable-offline-capable-app-shell-behavior-cache-static-assets-so-the-installed-app-can-load-a-basic-ui-while-offline-without-modifying-immutable-entry-files-e-g-frontend-src-main-tsx",
-      "title": "Implement a service worker to enable offline-capable app-shell behavior (cache static assets so the installed app can load a basic UI while offline), without modifying immutable entry files (e.g., frontend/src/main.tsx).",
+      "id": "feature-implement-a-dedicated-full-page-backend-unavailable-recovery-ui-that-appears-when-core-queries-fail-due-to-a-stopped-canister-or-actor-initialization-failure-and-provide-clear-recovery-actions-reload-retry-without-leaving-the-user-on-a-broken-screen",
+      "title": "Implement a dedicated full-page 'Backend unavailable' recovery UI that appears when core queries fail due to a stopped canister or actor initialization failure, and provide clear recovery actions (Reload, Retry) without leaving the user on a broken screen.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-an-in-app-english-help-entry-that-explains-how-to-install-the-catalog-on-mobile-android-chrome-and-ios-safari-placed-in-an-existing-discoverable-ui-location-e-g-footer-next-to-the-publishing-help",
-      "title": "Add an in-app, English help entry that explains how to install the catalog on mobile (Android Chrome and iOS Safari), placed in an existing discoverable UI location (e.g., Footer next to the publishing help).",
+      "id": "feature-add-a-startup-connectivity-check-using-the-new-backend-health-endpoint-that-runs-before-enabling-movie-genre-queries-and-route-query-failures-into-the-recovery-ui-so-users-can-reliably-restore-the-app-after-transient-deployment-canister-restarts",
+      "title": "Add a startup connectivity check (using the new backend health endpoint) that runs before enabling movie/genre queries, and route query failures into the recovery UI so users can reliably 'restore' the app after transient deployment/canister restarts.",
       "reqIds": [
         "REQ-3"
       ],
@@ -37,12 +28,14 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add ability to install the catalog site as a home-screen app icon (PWA-style) on mobile",
-      "reqIds": [],
+      "summary": "Add a lightweight backend health endpoint that can be called without authentication so the frontend can distinguish between (a) backend reachable and (b) backend stopped/unavailable.",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "Make the catalog installable on mobile as a home-screen app (PWA)",
+  "projectName": "Restore app usability when deployment fails or backend canister is stopped",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

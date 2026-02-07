@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useGetMovies, useFilterByGenre, useGetPaginationInfo } from '../hooks/useQueries';
+import { useBackendAvailability } from '../context/BackendAvailabilityContext';
+import { isBackendUnavailableError } from '../utils/errors';
 import MovieCard from './MovieCard';
 import MovieDetailDialog from './MovieDetailDialog';
 import PaginationControls from './PaginationControls';
@@ -19,6 +21,7 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const { reportUnavailable } = useBackendAvailability();
   
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -75,6 +78,14 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Report backend unavailability if movie loading fails with stopped canister error
+  useEffect(() => {
+    if (error && isBackendUnavailableError(error)) {
+      console.error('[MovieGrid] Backend unavailable error:', error);
+      reportUnavailable(error);
+    }
+  }, [error, reportUnavailable]);
+
   // Show offline message when offline
   if (!isOnline) {
     return (
@@ -84,10 +95,10 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
           <div className="absolute inset-0 blur-3xl bg-retro-amber/30" />
         </div>
         <h2 className="text-4xl retro-heading text-retro-amber mb-4 retro-glow-amber">
-          OFFLINE MODE
+          АВТОНОМНЫЙ РЕЖИМ
         </h2>
         <p className="text-xl retro-body text-retro-teal text-center max-w-md">
-          You're currently offline. Connect to the internet to view your movie collection.
+          Вы сейчас не в сети. Подключитесь к интернету, чтобы просмотреть коллекцию фильмов.
         </p>
       </div>
     );
@@ -108,8 +119,8 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
     );
   }
 
-  // Show error state if query failed
-  if (error) {
+  // Show error state if query failed (but not backend unavailable, that's handled by context)
+  if (error && !isBackendUnavailableError(error)) {
     console.error('[MovieGrid] Error:', error);
     const errorMessage = normalizeError(error);
     return (
@@ -119,7 +130,7 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
           <div className="absolute inset-0 blur-3xl bg-retro-magenta/30" />
         </div>
         <h2 className="text-4xl retro-heading text-retro-magenta mb-4 retro-glow-magenta">
-          ERROR LOADING MOVIES
+          ОШИБКА ЗАГРУЗКИ ФИЛЬМОВ
         </h2>
         <p className="text-xl retro-body text-retro-amber mb-6 text-center max-w-md">
           {errorMessage}
@@ -128,7 +139,7 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
           onClick={() => window.location.reload()}
           className="bg-retro-teal hover:bg-retro-teal/90 text-white retro-heading px-8 h-14"
         >
-          RELOAD PAGE
+          ПЕРЕЗАГРУЗИТЬ СТРАНИЦУ
         </Button>
       </div>
     );
@@ -143,12 +154,12 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
           <div className="absolute inset-0 blur-3xl bg-retro-magenta/30" />
         </div>
         <h2 className="text-4xl retro-heading text-retro-teal mb-4 retro-glow-teal">
-          {selectedGenre ? 'NO MOVIES FOUND' : 'COLLECTION EMPTY'}
+          {selectedGenre ? 'ФИЛЬМЫ НЕ НАЙДЕНЫ' : 'КОЛЛЕКЦИЯ ПУСТА'}
         </h2>
         <p className="text-xl retro-body text-retro-amber">
           {selectedGenre 
-            ? 'No movies in this genre yet' 
-            : 'Add your first movie to the collection'}
+            ? 'В этом жанре пока нет фильмов' 
+            : 'Добавьте первый фильм в коллекцию'}
         </p>
       </div>
     );
@@ -176,11 +187,11 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
               className="bg-card/90 border-3 border-retro-teal text-retro-teal hover:bg-retro-teal/20 hover:text-retro-magenta hover:border-retro-magenta disabled:opacity-30 retro-subheading px-8 h-14 transition-all"
             >
               <ChevronLeft className="w-6 h-6 mr-2" />
-              BACK
+              НАЗАД
             </Button>
             
-            <span className="text-retro-amber retro-heading text-xl retro-glow-amber">
-              ► {page + 1} ◄
+            <span className="text-2xl retro-heading text-retro-amber">
+              {page + 1} / {totalPages || 1}
             </span>
             
             <Button
@@ -189,12 +200,12 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
               variant="outline"
               className="bg-card/90 border-3 border-retro-teal text-retro-teal hover:bg-retro-teal/20 hover:text-retro-magenta hover:border-retro-magenta disabled:opacity-30 retro-subheading px-8 h-14 transition-all"
             >
-              NEXT
+              ВПЕРЁД
               <ChevronRight className="w-6 h-6 ml-2" />
             </Button>
           </div>
 
-          {!paginationError && totalPages > 1 && (
+          {totalPages > 1 && (
             <PaginationControls
               currentPageIndex={page}
               totalPages={totalPages}
@@ -204,12 +215,14 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
         </div>
       )}
 
-      <MovieDetailDialog
-        movie={selectedMovie}
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        initialPhotoIndex={selectedPhotoIndex}
-      />
+      {selectedMovie && (
+        <MovieDetailDialog
+          movie={selectedMovie}
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          initialPhotoIndex={selectedPhotoIndex}
+        />
+      )}
     </div>
   );
 }

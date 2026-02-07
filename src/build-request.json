@@ -1,80 +1,76 @@
 {
   "kind": "build_request",
-  "title": "Make the catalog installable on mobile as a home-screen app (PWA)",
-  "priority": "normal",
+  "title": "Restore app usability when deployment fails or backend canister is stopped",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add Progressive Web App (PWA) support so the catalog can be installed as a home-screen app icon on iOS and Android, including a web app manifest, required icons, and appropriate meta tags.",
-      "target": "frontend",
+      "text": "Add a lightweight backend health endpoint that can be called without authentication so the frontend can distinguish between (a) backend reachable and (b) backend stopped/unavailable.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-1"
         ],
         "quotes": [
-          "да"
+          "восстановить"
         ]
       },
       "acceptanceCriteria": [
-        "A valid web app manifest is available from the app origin (e.g., /manifest.webmanifest) and contains name/short_name, start_url, display, background_color, theme_color, and icon entries.",
-        "The app includes icon assets for common PWA sizes (at least 192x192 and 512x512, plus a maskable icon) and references them from the manifest.",
-        "frontend/index.html includes links/meta needed for installability (manifest link, theme-color, and Apple-specific tags such as apple-touch-icon and apple-mobile-web-app-capable where applicable).",
-        "On Android/Chrome, the site shows as installable (install prompt available via browser UI) and installs with the correct name and icons.",
-        "On iOS/Safari, “Add to Home Screen” creates a home-screen icon that launches the site in standalone mode (as supported by iOS)."
+        "backend/main.mo exposes a new public query method (e.g., health()) that returns a simple value (e.g., \"ok\" and/or a build/version string).",
+        "The health method does not require any permissions and does not trap for anonymous callers.",
+        "Calling the health method succeeds when the canister is running."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Implement a service worker to enable offline-capable app-shell behavior (cache static assets so the installed app can load a basic UI while offline), without modifying immutable entry files (e.g., frontend/src/main.tsx).",
+      "text": "Implement a dedicated full-page 'Backend unavailable' recovery UI that appears when core queries fail due to a stopped canister or actor initialization failure, and provide clear recovery actions (Reload, Retry) without leaving the user on a broken screen.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-1"
         ],
         "quotes": [
-          "да"
+          "восстановить"
         ]
       },
       "acceptanceCriteria": [
-        "A service worker is registered from a non-immutable file path (e.g., via code reachable from App.tsx or another editable module) and is active after a reload.",
-        "When offline, loading the installed app shows a basic cached shell (header/layout) rather than a blank page (dynamic content may show an offline message).",
-        "When online again, the app fetches fresh data normally; the service worker does not break authentication flows (Internet Identity login/logout still works)."
+        "When requests fail with a stopped-canister signature (e.g., Reject code: 5 / \"canister is stopped\") the app shows a prominent recovery panel instead of an empty/partial UI.",
+        "The recovery panel includes: (1) a Reload button that refreshes the page, and (2) a Retry button that re-runs the health check and refetches queries without a full reload.",
+        "The recovery panel surfaces the existing stopped-canister copy already used by frontend/src/utils/errors.ts (do not regress this message).",
+        "When the backend becomes available again, the app returns to normal operation without requiring a hard refresh."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Add an in-app, English help entry that explains how to install the catalog on mobile (Android Chrome and iOS Safari), placed in an existing discoverable UI location (e.g., Footer next to the publishing help).",
-      "target": "frontend",
+      "text": "Add a startup connectivity check (using the new backend health endpoint) that runs before enabling movie/genre queries, and route query failures into the recovery UI so users can reliably 'restore' the app after transient deployment/canister restarts.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-1"
         ],
         "quotes": [
-          "да"
+          "восстановить"
         ]
       },
       "acceptanceCriteria": [
-        "The UI includes an English “Install on phone” (or similar) action that opens a dialog or panel with platform-specific steps for Android and iOS.",
-        "Instructions include at minimum: Android (Chrome menu → Install app / Add to Home screen) and iOS (Share button → Add to Home Screen).",
-        "The new help UI matches the existing retro styling conventions used across the app."
+        "On initial load, the frontend performs a health check before enabling data queries; while checking, the UI shows a non-blocking loading state (not a blank screen).",
+        "If the health check fails, movie/genre/pagination queries are not executed repeatedly; instead, the recovery UI is shown.",
+        "Pressing Retry triggers the health check again and, on success, triggers React Query refetch for movies/genres/pagination."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything in frontend/src/components/ui (immutable paths).",
-    "Keep backend as single-actor Motoko; no backend changes are required for PWA installability."
+    "Backend must remain a single Motoko actor in backend/main.mo.",
+    "Do not edit any files under frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT.",
+    "Use English for any user-facing text in this build request (specification text), but do not unintentionally change existing in-app localized strings unless required by the recovery UI."
   ],
   "nonGoals": [
-    "Building or publishing a native iOS/Android app to App Store / Google Play.",
-    "Adding push notifications or background sync features."
+    "Automating or performing the actual Caffeine dashboard publish/republish operation (outside the app code).",
+    "Adding external monitoring, logging services, or third-party uptime checks.",
+    "Changing authentication providers (Internet Identity remains the only auth)."
   ],
   "imageRequirements": {
-    "required": [
-      "Neon retro VHS-style app icon with a stylized cassette and glow (app-icon.dim_512x512.png)",
-      "Neon retro VHS-style app icon with a stylized cassette and glow (app-icon.dim_192x192.png)",
-      "Neon retro VHS-style app icon, maskable-safe with generous padding and centered design (app-icon-maskable.dim_512x512.png)",
-      "Apple touch icon variant in the same style (apple-touch-icon.dim_180x180.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }
