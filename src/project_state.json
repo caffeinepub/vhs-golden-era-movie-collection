@@ -1,18 +1,27 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Troubleshooting an Internet Computer (Caffeine) app for a VHS movie collection where the backend canister is stopped, causing the frontend to fail loading movies; user confirmed the backend canister ID so the fix can proceed.",
   "architectural_notes": [
-    "Add authorization rules to prevent unauthenticated/other users from editing/deleting a user's movie collection (owner-only write access; guests read-only)."
+    "Frontend depends on an IC backend canister; if the canister is stopped, all queries fail and the UI appears stuck establishing connection.",
+    "Only a canister controller can start/restart a stopped canister; resolving requires restarting or redeploying the backend canister."
   ],
   "known_issues": [
-    "Currently other site visitors can delete or modify the user's movies (missing/incorrect access control)."
+    "Backend canister (gnqlv-giaaa-aaaaq-awbrq-cai) is stopped, causing connection failures and movies not loading."
   ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-update-the-frontend-to-prevent-guests-other-users-from-attempting-restricted-actions-hide-or-disable-the-delete-action-when-the-current-identity-is-not-the-movie-owner-and-prevent-opening-submitting-the-add-movie-dialog-when-the-user-is-not-authenticated",
-      "title": "Update the frontend to prevent guests/other users from attempting restricted actions: hide or disable the Delete action when the current identity is not the movie owner, and prevent opening/submitting the Add Movie dialog when the user is not authenticated.",
+      "id": "feature-update-frontend-error-normalization-to-explicitly-detect-the-canister-is-stopped-reject-code-5-failure-and-show-a-clear-english-message-that-the-backend-canister-is-stopped-and-the-user-should-reload-after-it-is-restarted-instead-of-the-generic-connection-is-being-established-message",
+      "title": "Update frontend error normalization to explicitly detect the \"canister is stopped\" (Reject code 5) failure and show a clear English message that the backend canister is stopped and the user should reload after it is restarted (instead of the generic “Connection is being established…” message).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-url-hash-secret-cleanup-so-that-caffeineadmintoken-hash-parameters-without-a-is-also-cleared-from-the-address-bar-after-being-read-and-stored-in-sessionstorage-while-preserving-other-hash-content-routes-when-present",
+      "title": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
       "reqIds": [
         "REQ-3"
       ],
@@ -22,28 +31,15 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Restrict permissions so site visitors/guests cannot modify or delete the user's movies (access control/authorization)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Add backend authorization so only the movie creator (owner) can delete their movie, and unauthenticated (anonymous) callers cannot add or delete movies.",
+      "summary": "Restore service by deploying an upgrade/build that brings backend canister `gnqlv-giaaa-aaaaq-awbrq-cai` back to a running state without losing existing movie data.",
       "reqIds": [
         "REQ-1"
       ],
       "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Expose movie ownership information to the frontend so the UI can determine whether the current user is allowed to delete a given movie.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
     }
   ],
-  "projectName": "Prevent guests and other visitors from modifying or deleting the owner's movies",
+  "gameProjectType": "none",
+  "projectName": "VHS Golden Era Movie Collection",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

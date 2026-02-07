@@ -62,6 +62,7 @@ export interface _SERVICE {
   'deleteMovie' : ActorMethod<[MovieId], undefined>,
   'filterByGenre' : ActorMethod<[string], Array<Movie>>,
   'getAllGenres' : ActorMethod<[], Array<string>>,
+  'getAuthStatus' : ActorMethod<[], { 'caller' : Principal }>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getMovie' : ActorMethod<

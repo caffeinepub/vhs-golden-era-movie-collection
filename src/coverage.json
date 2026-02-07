@@ -1,70 +1,54 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-07T06:07:20.740Z",
+  "generatedAt": "2026-02-07T07:09:52.676Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 3,
-    "implemented": 1,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add backend authorization so only the movie creator (owner) can delete their movie, and unauthenticated (anonymous) callers cannot add or delete movies.",
+        "summary": "Restore service by deploying an upgrade/build that brings backend canister `gnqlv-giaaa-aaaaq-awbrq-cai` back to a running state without losing existing movie data.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Expose movie ownership information to the frontend so the UI can determine whether the current user is allowed to delete a given movie.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "summary": "Update frontend error normalization to explicitly detect the \"canister is stopped\" (Reject code 5) failure and show a clear English message that the backend canister is stopped and the user should reload after it is restarted (instead of the generic “Connection is being established…” message).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/errors.ts",
+          "frontend/src/components/MovieGrid.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/errors.ts"
+        ]
       },
       {
         "id": "REQ-3",
-        "summary": "Update the frontend to prevent guests/other users from attempting restricted actions: hide or disable the Delete action when the current identity is not the movie owner, and prevent opening/submitting the Add Movie dialog when the user is not authenticated.",
+        "summary": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/movieOwnership.ts",
-          "frontend/src/utils/errors.ts",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/AddMovieDialog.tsx",
-          "frontend/src/components/MovieCard.tsx"
+          "frontend/src/utils/urlParams.ts",
+          "frontend/src/hooks/useActor.ts"
         ],
         "matchedFiles": [
-          "frontend/src/utils/movieOwnership.ts",
-          "frontend/src/utils/errors.ts",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/AddMovieDialog.tsx",
-          "frontend/src/components/MovieCard.tsx"
+          "frontend/src/utils/urlParams.ts"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/authorization/MixinAuthorization.mo",
-    "backend/authorization/access-control.mo",
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/AddMovieDialog.tsx",
-    "frontend/src/components/Header.tsx",
-    "frontend/src/components/MovieCard.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useActor.ts",
     "frontend/src/utils/errors.ts",
-    "frontend/src/utils/movieOwnership.ts",
     "frontend/src/utils/urlParams.ts",
     "project_state.json",
     "scratch/component-selection.json",

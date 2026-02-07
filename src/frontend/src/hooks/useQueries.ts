@@ -4,42 +4,91 @@ import type { Movie, MovieId } from '../backend';
 import { ExternalBlob } from '../backend';
 
 export function useGetMovies(page: number) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<Movie[]>({
+  const query = useQuery<Movie[]>({
     queryKey: ['movies', page],
     queryFn: async () => {
-      if (!actor) return [];
-      return actor.getMovies(BigInt(page));
+      if (!actor) {
+        console.error('[useGetMovies] Actor not available during query execution');
+        throw new Error('Actor not initialized');
+      }
+      console.log('[useGetMovies] Fetching movies for page:', page);
+      const movies = await actor.getMovies(BigInt(page));
+      console.log('[useGetMovies] Fetched', movies.length, 'movies');
+      return movies;
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching,
+    placeholderData: (previousData) => previousData,
+    retry: 1,
   });
+
+  // Return custom state that properly reflects actor dependency
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && !actorFetching && query.isFetched,
+  };
 }
 
 export function useFilterByGenre(genre: string | null) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<Movie[]>({
+  const query = useQuery<Movie[]>({
     queryKey: ['movies', 'genre', genre],
     queryFn: async () => {
-      if (!actor || !genre) return [];
-      return actor.filterByGenre(genre);
+      if (!actor) {
+        console.error('[useFilterByGenre] Actor not available during query execution');
+        throw new Error('Actor not initialized');
+      }
+      if (!genre) {
+        console.log('[useFilterByGenre] No genre selected, returning empty array');
+        return [];
+      }
+      console.log('[useFilterByGenre] Filtering by genre:', genre);
+      const movies = await actor.filterByGenre(genre);
+      console.log('[useFilterByGenre] Found', movies.length, 'movies');
+      return movies;
     },
-    enabled: !!actor && !isFetching && !!genre,
+    enabled: !!actor && !actorFetching && !!genre,
+    placeholderData: (previousData) => previousData,
+    retry: 1,
   });
+
+  // Return custom state that properly reflects actor dependency
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && !actorFetching && query.isFetched,
+  };
 }
 
 export function useGetAllGenres() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<string[]>({
+  const query = useQuery<string[]>({
     queryKey: ['genres'],
     queryFn: async () => {
-      if (!actor) return [];
-      return actor.getAllGenres();
+      if (!actor) {
+        console.error('[useGetAllGenres] Actor not available during query execution');
+        throw new Error('Actor not initialized');
+      }
+      console.log('[useGetAllGenres] Fetching all genres');
+      const genres = await actor.getAllGenres();
+      console.log('[useGetAllGenres] Fetched', genres.length, 'genres');
+      return genres;
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching,
+    placeholderData: (previousData) => previousData,
+    retry: 1,
   });
+
+  // Return custom state that properly reflects actor dependency
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && !actorFetching && query.isFetched,
+  };
 }
 
 export function useAddMovie() {

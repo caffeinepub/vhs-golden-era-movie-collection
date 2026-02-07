@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Prevent guests and non-owners from adding or deleting movies, so only the movie creator can delete their own movies while everyone can still browse.
+**Goal:** Restore the movie collection app’s connectivity by restarting the stopped backend canister without data loss, and improve the frontend UX for stopped-canister errors and URL hash token cleanup.
 
 **Planned changes:**
-- Backend: store the caller Principal as the owner when a movie is created.
-- Backend: enforce authorization so only the stored owner can delete a movie; reject add/delete calls from unauthorized or anonymous callers.
-- Backend: include movie owner identifier in movie records returned by read/query methods so the frontend can determine ownership.
-- Frontend: hide/disable Delete for non-owners and prevent opening/submitting Add Movie when the user is not authenticated; show an English error message if the backend rejects add/delete.
+- Deploy an upgrade/build to bring backend canister `gnqlv-giaaa-aaaaq-awbrq-cai` back to a running state while preserving existing movie data.
+- Update frontend error normalization to detect “canister is stopped” / “Reject code: 5” and show a clear English message indicating the backend canister is stopped, with a recovery action (e.g., reload).
+- Fix URL hash cleanup so `#caffeineAdminToken=...` is removed after storing to `sessionStorage`, while preserving other hash routes/parameters (e.g., keep `#/route?other=x`).
 
-**User-visible outcome:** Anonymous visitors can browse movies but cannot add or delete; signed-in users can add movies and can delete only movies they created, with clear error messaging when an action is not allowed.
+**User-visible outcome:** Movies load again without “canister is stopped” failures, and if the backend is stopped the app shows a clear English error with a reload/recovery option; admin token hash fragments are cleaned from the URL without breaking hash routing.

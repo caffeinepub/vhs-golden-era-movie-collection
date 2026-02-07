@@ -3,7 +3,6 @@ import Text "mo:core/Text";
 import Principal "mo:core/Principal";
 import Array "mo:core/Array";
 import List "mo:core/List";
-import Iter "mo:core/Iter";
 import Int "mo:core/Int";
 import Map "mo:core/Map";
 import Time "mo:core/Time";
@@ -13,9 +12,7 @@ import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import Runtime "mo:core/Runtime";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   include MixinStorage();
 
@@ -57,6 +54,12 @@ actor {
 
   var movies = Map.empty<MovieId, Movie>();
   let userProfiles = Map.empty<Principal, UserProfile>();
+
+  public query ({ caller }) func getAuthStatus() : async { caller : Principal } {
+    {
+      caller = caller;
+    };
+  };
 
   // User profile management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -151,16 +154,7 @@ actor {
     let startIndex = page * ITEMS_PER_PAGE;
     if (startIndex >= moviesList.size()) { return [] };
     let endIndex = Nat.min(startIndex + ITEMS_PER_PAGE, moviesList.size());
-    Array.tabulate< ?Movie>(endIndex - startIndex, func(i) { ?moviesList[i + startIndex] }).map< ?Movie, Movie>(
-      func(x) {
-        switch (x) {
-          case (null) {
-            Runtime.trap("Index out of bounds " # debug_show (startIndex, endIndex));
-          };
-          case (?x) { x };
-        };
-      }
-    );
+    moviesList.sliceToArray(startIndex, endIndex);
   };
 
   public query ({ caller }) func filterByGenre(genre : Text) : async [Movie] {

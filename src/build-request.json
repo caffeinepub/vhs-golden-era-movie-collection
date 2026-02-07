@@ -1,75 +1,82 @@
 {
   "kind": "build_request",
-  "title": "Prevent guests and other visitors from modifying or deleting the owner's movies",
+  "title": "Restore movie collection connectivity by restarting stopped backend canister and improving stopped-canister UX",
   "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add backend authorization so only the movie creator (owner) can delete their movie, and unauthenticated (anonymous) callers cannot add or delete movies.",
+      "text": "Restore service by deploying an upgrade/build that brings backend canister `gnqlv-giaaa-aaaaq-awbrq-cai` back to a running state without losing existing movie data.",
       "target": "backend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "другие  посетители сайта могут удалить мои фильмы?  нужно сделать так чтоб гости сайта не могли ничего делать с моими фильмами"
+          "ДА"
         ]
       },
       "acceptanceCriteria": [
-        "When a movie is created, the backend stores the caller Principal as the movie owner.",
-        "Calling deleteMovie(id) from any Principal other than the stored owner fails (traps/returns an error) and the movie remains unchanged.",
-        "Calling addMovie(...) from an anonymous Principal fails (traps/returns an error) and no movie is created.",
-        "Unauthenticated users can still read/browse movies via query methods (getMovies, getMovie, filterByGenre, getAllGenres)."
+        "After the new version is deployed, calls such as `getMovies` no longer fail with \"Reject code: 5 ... Canister ... is stopped\" for canister `gnqlv-giaaa-aaaaq-awbrq-cai`.",
+        "Previously created movies are still returned by `getMovies` after the canister is running again (no data loss)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Expose movie ownership information to the frontend so the UI can determine whether the current user is allowed to delete a given movie.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "нужно сделать так чтоб гости сайта не могли ничего делать с моими фильмами"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Movie records returned from getMovies/getMovie/filterByGenre include an owner identifier (Principal) sufficient for the frontend to compare with the current identity principal.",
-        "The generated frontend backend types compile successfully after the backend interface change."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Update the frontend to prevent guests/other users from attempting restricted actions: hide or disable the Delete action when the current identity is not the movie owner, and prevent opening/submitting the Add Movie dialog when the user is not authenticated.",
+      "text": "Update frontend error normalization to explicitly detect the \"canister is stopped\" (Reject code 5) failure and show a clear English message that the backend canister is stopped and the user should reload after it is restarted (instead of the generic “Connection is being established…” message).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "гости сайта не могли ничего делать с моими фильмами"
+          "ДА"
         ]
       },
       "acceptanceCriteria": [
-        "If the viewer is anonymous, the Add button does not allow adding a movie (either disabled or replaced with a login-required flow), and the dialog cannot successfully submit.",
-        "If the viewer is not the owner of a movie, the Delete button/action for that movie is not available (hidden or disabled) and cannot be triggered through the UI.",
-        "If the backend rejects add/delete due to authorization, the UI shows a clear error toast/message in English (e.g., 'You are not authorized to perform this action.')."
+        "When the replica returns an error containing text like \"Canister ... is stopped\" and/or \"Reject code: 5\", the Movies screen shows a specific English error message indicating the backend canister is stopped.",
+        "The UI continues to offer a recovery action (e.g., reload) from the error state."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "ДА"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Given a URL like `https://vhs-golden-era-movie-collection-7n6.caffeine.xyz/#caffeineAdminToken=TOKEN`, after app initialization the `caffeineAdminToken` is stored in sessionStorage and is removed from `window.location.hash` without a page reload.",
+        "Given a URL like `https://.../#/route?caffeineAdminToken=TOKEN&other=x`, after initialization the token is removed but `#/route?other=x` remains."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (read-only).",
-    "Do not edit immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx.",
-    "Keep all Motoko logic in the single actor in backend/main.mo; do not introduce additional backend services."
+    "Backend must remain a single Motoko actor in `backend/main.mo` (no additional backend services).",
+    "Do not edit files under `frontend/src/components/ui` or any other paths listed in `frontend.immutablePaths`.",
+    "All user-facing text introduced or modified by this change must be in English."
   ],
   "nonGoals": [
-    "Implementing multi-user collaboration or shared collections.",
-    "Adding edit/update functionality for movies (only secure existing add/delete).",
-    "Adding third-party authentication (only Internet Identity is supported)."
+    "Adding new authentication providers (only Internet Identity remains).",
+    "Implementing external monitoring/alerting or third-party uptime services.",
+    "Changing the movie data model or adding new movie features beyond restoring connectivity and clearer errors."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

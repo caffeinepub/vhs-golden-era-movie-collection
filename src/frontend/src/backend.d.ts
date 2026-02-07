@@ -39,6 +39,9 @@ export interface backendInterface {
     deleteMovie(id: MovieId): Promise<void>;
     filterByGenre(genre: string): Promise<Array<Movie>>;
     getAllGenres(): Promise<Array<string>>;
+    getAuthStatus(): Promise<{
+        caller: Principal;
+    }>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getMovie(id: MovieId): Promise<{

@@ -2,14 +2,30 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-frontend-to-prevent-guests-other-users-from-attempting-restricted-actions-hide-or-disable-the-delete-action-when-the-current-identity-is-not-the-movie-owner-and-prevent-opening-submitting-the-add-movie-dialog-when-the-user-is-not-authenticated",
-      "featureTitle": "Update the frontend to prevent guests/other users from attempting restricted actions: hide or disable the Delete action when the current identity is not the movie owner, and prevent opening/submitting the Add Movie dialog when the user is not authenticated.",
+      "featureId": "feature-update-frontend-error-normalization-to-explicitly-detect-the-canister-is-stopped-reject-code-5-failure-and-show-a-clear-english-message-that-the-backend-canister-is-stopped-and-the-user-should-reload-after-it-is-restarted-instead-of-the-generic-connection-is-being-established-message",
+      "featureTitle": "Update frontend error normalization to explicitly detect the \"canister is stopped\" (Reject code 5) failure and show a clear English message that the backend canister is stopped and the user should reload after it is restarted (instead of the generic “Connection is being established…” message).",
       "files": [
-        "frontend/src/components/AddMovieDialog.tsx",
-        "frontend/src/components/Header.tsx",
-        "frontend/src/components/MovieCard.tsx",
-        "frontend/src/utils/errors.ts",
-        "frontend/src/utils/movieOwnership.ts"
+        "frontend/src/utils/errors.ts"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "core-infrastructure@1.0.2",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-url-hash-secret-cleanup-so-that-caffeineadmintoken-hash-parameters-without-a-is-also-cleared-from-the-address-bar-after-being-read-and-stored-in-sessionstorage-while-preserving-other-hash-content-routes-when-present",
+      "featureTitle": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
+      "files": [
+        "frontend/src/utils/urlParams.ts"
       ],
       "components": [
         "blob-storage@4.0.0",

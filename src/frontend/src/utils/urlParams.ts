@@ -103,7 +103,16 @@ export function clearSessionParameter(key: string): void {
  * Preserves route information and other parameters in the hash
  * Used to remove sensitive data from the address bar after extracting it
  *
+ * Supports two hash formats:
+ * 1. Hash-only parameters: #caffeineAdminToken=xxx
+ * 2. Hash routes with query: #/route?caffeineAdminToken=xxx&other=value
+ *
  * @param paramName - The parameter to remove from the hash
+ *
+ * @example
+ * // URL: https://app.com/#caffeineAdminToken=xxx
+ * // After clearParamFromHash('caffeineAdminToken')
+ * // URL: https://app.com/
  *
  * @example
  * // URL: https://app.com/#/dashboard?caffeineAdminToken=xxx&other=value
@@ -127,7 +136,15 @@ function clearParamFromHash(paramName: string): void {
     const queryStartIndex = hashContent.indexOf('?');
 
     if (queryStartIndex === -1) {
-        // No query string in hash, nothing to remove
+        // No '?' found - check if the entire hash is just parameters (e.g., #caffeineAdminToken=xxx)
+        const params = new URLSearchParams(hashContent);
+        if (params.has(paramName)) {
+            params.delete(paramName);
+            const newQueryString = params.toString();
+            // If no parameters remain, remove the hash entirely
+            const newUrl = window.location.pathname + window.location.search + (newQueryString ? '#' + newQueryString : '');
+            window.history.replaceState(null, '', newUrl);
+        }
         return;
     }
 
@@ -156,7 +173,9 @@ function clearParamFromHash(paramName: string): void {
  * Hash fragments aren't sent to servers or logged in access logs
  * The hash is immediately cleared from the URL after extraction to prevent history leakage
  *
- * Usage: https://yourapp.com/#secret=xxx
+ * Supports two hash formats:
+ * 1. Hash-only parameters: #caffeineAdminToken=xxx
+ * 2. Hash routes with query: #/route?caffeineAdminToken=xxx
  *
  * @param paramName - The name of the secret parameter
  * @returns The secret value if found (from hash or session), null otherwise
@@ -176,8 +195,22 @@ export function getSecretFromHash(paramName: string): string | null {
 
     // Remove the leading #
     const hashContent = hash.substring(1);
-    const params = new URLSearchParams(hashContent);
-    const secret = params.get(paramName);
+    
+    // Check if there's a '?' in the hash (route with query string)
+    const queryStartIndex = hashContent.indexOf('?');
+    
+    let secret: string | null = null;
+    
+    if (queryStartIndex !== -1) {
+        // Format: #/route?caffeineAdminToken=xxx
+        const queryString = hashContent.substring(queryStartIndex + 1);
+        const params = new URLSearchParams(queryString);
+        secret = params.get(paramName);
+    } else {
+        // Format: #caffeineAdminToken=xxx (no route, just parameters)
+        const params = new URLSearchParams(hashContent);
+        secret = params.get(paramName);
+    }
 
     if (secret) {
         // Store in session for persistence

@@ -132,6 +132,9 @@ export interface backendInterface {
     deleteMovie(id: MovieId): Promise<void>;
     filterByGenre(genre: string): Promise<Array<Movie>>;
     getAllGenres(): Promise<Array<string>>;
+    getAuthStatus(): Promise<{
+        caller: Principal;
+    }>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getMovie(id: MovieId): Promise<{
@@ -311,6 +314,22 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getAllGenres();
+            return result;
+        }
+    }
+    async getAuthStatus(): Promise<{
+        caller: Principal;
+    }> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAuthStatus();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAuthStatus();
             return result;
         }
     }

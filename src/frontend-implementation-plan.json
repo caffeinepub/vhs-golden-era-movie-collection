@@ -1,41 +1,45 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Frontend guards for add/delete movie actions based on authentication and ownership",
+  "title": "Improve stopped-canister UX and hash secret cleanup",
   "requirements": [
     {
-      "id": "REQ-3",
-      "summary": "Prevent guests and non-owners from attempting add/delete actions in the UI; show clear English authorization errors when backend rejects.",
+      "id": "REQ-2",
+      "summary": "Detect stopped backend canister (Reject code 5) in frontend error normalization and show a clear English message with reload recovery.",
       "acceptanceCriteria": [
-        "If the viewer is anonymous, the Add button does not allow adding a movie (either disabled or replaced with a login-required flow), and the dialog cannot successfully submit.",
-        "If the viewer is not the owner of a movie, the Delete button/action for that movie is not available (hidden or disabled) and cannot be triggered through the UI.",
-        "If the backend rejects add/delete due to authorization, the UI shows a clear error toast/message in English (e.g., 'You are not authorized to perform this action.')."
+        "When the replica returns an error containing text like \"Canister ... is stopped\" and/or \"Reject code: 5\", the Movies screen shows a specific English error message indicating the backend canister is stopped.",
+        "The UI continues to offer a recovery action (e.g., reload) from the error state."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/movieOwnership.ts",
-          "operation": "create",
-          "description": "Add a small helper to determine whether the current identity Principal matches a movie's owner/creator Principal (compare by toString), to centrally support ownership checks across the UI."
-        },
-        {
           "path": "frontend/src/utils/errors.ts",
-          "operation": "create",
-          "description": "Add a helper to normalize thrown errors into user-facing messages, mapping authorization-related failures (e.g., trap messages containing 'Unauthorized' / 'not authorized') to a clear English toast message ('You are not authorized to perform this action.')."
+          "operation": "modify",
+          "description": "Update normalizeError() to explicitly detect replica rejection cases indicating a stopped canister (e.g., message contains \"reject code: 5\" and/or \"canister\" + \"stopped\") and return a specific English user-facing message instructing the user to reload after the backend is restarted. Ensure existing generic 'Connection is being established…' is not used for this stopped-canister case."
         },
         {
-          "path": "frontend/src/components/Header.tsx",
+          "path": "frontend/src/components/MovieGrid.tsx",
           "operation": "modify",
-          "description": "Use the existing authentication hook (useInternetIdentity) to detect anonymous viewers and prevent opening the Add Movie dialog when not authenticated (disable the Add button or guard its click handler with an English login-required toast)."
+          "description": "Ensure the Movies error state continues to surface normalizeError() output and retains a recovery action (reload). If needed, adjust copy/layout to keep the stopped-canister message clearly visible in English without changing immutable UI component paths (Verify the component's usage instructions before implementing)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Clear caffeineAdminToken from URL hash for both '#token=value' and '#/route?token=value' forms while preserving other hash route/query content, without reloading.",
+      "acceptanceCriteria": [
+        "Given a URL like `https://vhs-golden-era-movie-collection-7n6.caffeine.xyz/#caffeineAdminToken=TOKEN`, after app initialization the `caffeineAdminToken` is stored in sessionStorage and is removed from `window.location.hash` without a page reload.",
+        "Given a URL like `https://.../#/route?caffeineAdminToken=TOKEN&other=x`, after initialization the token is removed but `#/route?other=x` remains."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/urlParams.ts",
+          "operation": "modify",
+          "description": "Fix secret extraction and hash cleanup logic to support both hash-only parameters without '?' (e.g., '#caffeineAdminToken=TOKEN') and hash routes with query strings (e.g., '#/route?caffeineAdminToken=TOKEN&other=x'). Update getSecretFromHash() to read the token from the correct hash segment, and update clearParamFromHash() to remove only the specified key while preserving any existing route/hash content and other parameters, using history.replaceState with no page reload."
         },
         {
-          "path": "frontend/src/components/AddMovieDialog.tsx",
+          "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Use the existing authentication hook (useInternetIdentity) to (1) block opening the dialog when unauthenticated (event handler guard) and (2) block submission when unauthenticated with an English login-required toast; also use the shared error helper so backend authorization rejections display the required English authorization message."
-        },
-        {
-          "path": "frontend/src/components/MovieCard.tsx",
-          "operation": "modify",
-          "description": "Use the ownership helper + current identity Principal to hide or disable the Delete action when the viewer is not the movie owner/creator, ensuring delete cannot be triggered via the UI; also use the shared error helper so backend authorization rejections show the required English authorization toast."
+          "description": "Ensure getSecretParameter('caffeineAdminToken') is executed during app initialization even when the user is not authenticated, so the token is stored in sessionStorage and removed from window.location.hash immediately. Keep passing the token only where needed for actor initialization, but always perform the read/cleanup step."
         }
       ]
     }

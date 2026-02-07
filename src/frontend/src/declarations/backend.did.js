@@ -75,6 +75,11 @@ export const idlService = IDL.Service({
   'deleteMovie' : IDL.Func([MovieId], [], []),
   'filterByGenre' : IDL.Func([IDL.Text], [IDL.Vec(Movie)], ['query']),
   'getAllGenres' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+  'getAuthStatus' : IDL.Func(
+      [],
+      [IDL.Record({ 'caller' : IDL.Principal })],
+      ['query'],
+    ),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getMovie' : IDL.Func(
@@ -162,6 +167,11 @@ export const idlFactory = ({ IDL }) => {
     'deleteMovie' : IDL.Func([MovieId], [], []),
     'filterByGenre' : IDL.Func([IDL.Text], [IDL.Vec(Movie)], ['query']),
     'getAllGenres' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'getAuthStatus' : IDL.Func(
+        [],
+        [IDL.Record({ 'caller' : IDL.Principal })],
+        ['query'],
+      ),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getMovie' : IDL.Func(

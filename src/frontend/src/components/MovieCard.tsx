@@ -105,41 +105,38 @@ export default function MovieCard({ movie, onOpenDetail }: MovieCardProps) {
                 <Badge
                   key={genre}
                   variant="outline"
-                  className="bg-retro-purple/30 border-2 border-retro-teal text-retro-teal text-xs retro-subheading px-3 py-1"
+                  className="bg-retro-purple/20 border-2 border-retro-teal text-retro-teal text-xs retro-subheading"
                 >
                   {genre.toUpperCase()}
                 </Badge>
               ))}
             </div>
           )}
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full mt-2 bg-retro-purple/30 hover:bg-retro-purple/50 border-3 border-retro-teal text-retro-teal retro-subheading transition-all h-11"
-          >
-            <Info className="w-5 h-5 mr-2" />
-            ПОДРОБНЕЕ
-          </Button>
         </div>
       </CardContent>
 
-      {/* Only show delete button if user is the owner */}
-      {isOwner && (
-        <CardFooter className="p-6 pt-0">
+      <CardFooter className="p-6 pt-0 flex justify-between items-center gap-4">
+        <Button
+          variant="outline"
+          onClick={handleCardClick}
+          className="flex-1 bg-background/50 border-3 border-retro-teal text-retro-teal hover:bg-retro-teal/20 retro-subheading h-12"
+        >
+          <Info className="w-5 h-5 mr-2" />
+          ПОДРОБНЕЕ
+        </Button>
+
+        {/* Only show delete button to the movie owner */}
+        {isOwner && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 variant="destructive"
-                size="sm"
-                className="w-full bg-destructive hover:bg-destructive/90 border-3 border-destructive text-white retro-subheading transition-all h-11"
-                onClick={(e) => e.stopPropagation()}
+                className="bg-destructive/80 hover:bg-destructive border-3 border-destructive text-white retro-subheading h-12 px-6"
               >
-                <Trash2 className="w-5 h-5 mr-2" />
-                УДАЛИТЬ
+                <Trash2 className="w-5 h-5" />
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="retro-panel shadow-retro-lg max-w-md">
+            <AlertDialogContent className="retro-panel border-3 border-retro-magenta shadow-retro-lg">
               <div className="retro-grid absolute inset-0 pointer-events-none opacity-10" />
               
               <AlertDialogHeader className="relative z-10">
@@ -152,21 +149,21 @@ export default function MovieCard({ movie, onOpenDetail }: MovieCardProps) {
               </AlertDialogHeader>
               
               <AlertDialogFooter className="relative z-10 mt-6">
-                <AlertDialogCancel className="bg-background border-3 border-retro-teal text-retro-teal hover:bg-muted retro-subheading px-6 h-12">
+                <AlertDialogCancel className="bg-background border-3 border-retro-teal text-retro-teal hover:bg-muted retro-subheading h-12 px-8">
                   ОТМЕНА
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleDelete}
                   disabled={deleteMovie.isPending}
-                  className="bg-destructive hover:bg-destructive/90 text-white retro-heading px-6 h-12"
+                  className="bg-destructive hover:bg-destructive/90 text-white retro-heading h-12 px-8"
                 >
                   {deleteMovie.isPending ? 'УДАЛЕНИЕ...' : 'УДАЛИТЬ'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        </CardFooter>
-      )}
+        )}
+      </CardFooter>
     </Card>
   );
 }
