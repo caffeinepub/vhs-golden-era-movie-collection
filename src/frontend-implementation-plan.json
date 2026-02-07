@@ -1,0 +1,43 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Frontend guards for add/delete movie actions based on authentication and ownership",
+  "requirements": [
+    {
+      "id": "REQ-3",
+      "summary": "Prevent guests and non-owners from attempting add/delete actions in the UI; show clear English authorization errors when backend rejects.",
+      "acceptanceCriteria": [
+        "If the viewer is anonymous, the Add button does not allow adding a movie (either disabled or replaced with a login-required flow), and the dialog cannot successfully submit.",
+        "If the viewer is not the owner of a movie, the Delete button/action for that movie is not available (hidden or disabled) and cannot be triggered through the UI.",
+        "If the backend rejects add/delete due to authorization, the UI shows a clear error toast/message in English (e.g., 'You are not authorized to perform this action.')."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/movieOwnership.ts",
+          "operation": "create",
+          "description": "Add a small helper to determine whether the current identity Principal matches a movie's owner/creator Principal (compare by toString), to centrally support ownership checks across the UI."
+        },
+        {
+          "path": "frontend/src/utils/errors.ts",
+          "operation": "create",
+          "description": "Add a helper to normalize thrown errors into user-facing messages, mapping authorization-related failures (e.g., trap messages containing 'Unauthorized' / 'not authorized') to a clear English toast message ('You are not authorized to perform this action.')."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Use the existing authentication hook (useInternetIdentity) to detect anonymous viewers and prevent opening the Add Movie dialog when not authenticated (disable the Add button or guard its click handler with an English login-required toast)."
+        },
+        {
+          "path": "frontend/src/components/AddMovieDialog.tsx",
+          "operation": "modify",
+          "description": "Use the existing authentication hook (useInternetIdentity) to (1) block opening the dialog when unauthenticated (event handler guard) and (2) block submission when unauthenticated with an English login-required toast; also use the shared error helper so backend authorization rejections display the required English authorization message."
+        },
+        {
+          "path": "frontend/src/components/MovieCard.tsx",
+          "operation": "modify",
+          "description": "Use the ownership helper + current identity Principal to hide or disable the Delete action when the viewer is not the movie owner/creator, ensuring delete cannot be triggered via the UI; also use the shared error helper so backend authorization rejections show the required English authorization toast."
+        }
+      ]
+    }
+  ]
+}

@@ -1,2 +1,3 @@
-# vhs-golden-era-movie-collection
-Exported from Caffeine project: Prevent guests and other visitors from modifying or deleting the owner's movies
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

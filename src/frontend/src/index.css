@@ -1,0 +1,361 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --radius: 0rem;
+        /* 1980s Neon Theme - Hot Pink, Teal, Amber on Charcoal */
+        --background: 0.12 0.02 280;
+        --foreground: 0.95 0.02 60;
+        --card: 0.18 0.03 280;
+        --card-foreground: 0.95 0.02 60;
+        --popover: 0.15 0.03 280;
+        --popover-foreground: 0.95 0.02 60;
+        --primary: 0.65 0.28 340;
+        --primary-foreground: 0.98 0 0;
+        --secondary: 0.60 0.22 180;
+        --secondary-foreground: 0.98 0 0;
+        --muted: 0.25 0.04 280;
+        --muted-foreground: 0.65 0.08 180;
+        --accent: 0.75 0.18 70;
+        --accent-foreground: 0.12 0.02 280;
+        --destructive: 0.55 0.25 25;
+        --destructive-foreground: 0.98 0 0;
+        --border: 0.35 0.15 180;
+        --input: 0.22 0.08 280;
+        --ring: 0.65 0.28 340;
+        --chart-1: 0.65 0.28 340;
+        --chart-2: 0.60 0.22 180;
+        --chart-3: 0.75 0.18 70;
+        --chart-4: 0.70 0.20 300;
+        --chart-5: 0.68 0.16 210;
+        --sidebar: 0.15 0.03 280;
+        --sidebar-foreground: 0.95 0.02 60;
+        --sidebar-primary: 0.65 0.28 340;
+        --sidebar-primary-foreground: 0.98 0 0;
+        --sidebar-accent: 0.25 0.08 280;
+        --sidebar-accent-foreground: 0.95 0.02 60;
+        --sidebar-border: 0.35 0.15 180;
+        --sidebar-ring: 0.65 0.28 340;
+        
+        /* 80s Neon Color Palette */
+        --retro-magenta: oklch(0.65 0.28 340);
+        --retro-teal: oklch(0.60 0.22 180);
+        --retro-amber: oklch(0.75 0.18 70);
+        --retro-purple: oklch(0.55 0.24 300);
+        --retro-charcoal: oklch(0.12 0.02 280);
+    }
+
+    .dark {
+        --background: 0.08 0 0;
+        --foreground: 0.95 0 0;
+        --card: 0.12 0 0;
+        --card-foreground: 0.95 0 0;
+        --popover: 0.1 0 0;
+        --popover-foreground: 0.95 0 0;
+        --primary: 0.65 0.28 340;
+        --primary-foreground: 0.08 0 0;
+        --secondary: 0.60 0.22 180;
+        --secondary-foreground: 0.08 0 0;
+        --muted: 0.2 0.05 280;
+        --muted-foreground: 0.6 0.1 180;
+        --accent: 0.75 0.18 70;
+        --accent-foreground: 0.08 0 0;
+        --destructive: 0.55 0.25 25;
+        --destructive-foreground: 0.95 0 0;
+        --border: 0.3 0.15 180;
+        --input: 0.25 0.12 280;
+        --ring: 0.65 0.28 340;
+        --chart-1: 0.65 0.28 340;
+        --chart-2: 0.60 0.22 180;
+        --chart-3: 0.75 0.18 70;
+        --chart-4: 0.70 0.20 300;
+        --chart-5: 0.68 0.16 210;
+        --sidebar: 0.1 0 0;
+        --sidebar-foreground: 0.95 0 0;
+        --sidebar-primary: 0.65 0.28 340;
+        --sidebar-primary-foreground: 0.08 0 0;
+        --sidebar-accent: 0.2 0.1 280;
+        --sidebar-accent-foreground: 0.95 0 0;
+        --sidebar-border: 0.25 0.12 180;
+        --sidebar-ring: 0.65 0.28 340;
+    }
+
+    * {
+        @apply border-border;
+    }
+    
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Impact', 'Arial Black', 'Helvetica', sans-serif;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+    }
+}
+
+@layer utilities {
+    /* 80s Neon Color Utilities */
+    .text-retro-magenta {
+        color: var(--retro-magenta);
+    }
+    
+    .text-retro-teal {
+        color: var(--retro-teal);
+    }
+    
+    .text-retro-amber {
+        color: var(--retro-amber);
+    }
+    
+    .text-retro-purple {
+        color: var(--retro-purple);
+    }
+    
+    .bg-retro-magenta {
+        background-color: var(--retro-magenta);
+    }
+    
+    .bg-retro-teal {
+        background-color: var(--retro-teal);
+    }
+    
+    .bg-retro-amber {
+        background-color: var(--retro-amber);
+    }
+    
+    .border-retro-magenta {
+        border-color: var(--retro-magenta);
+    }
+    
+    .border-retro-teal {
+        border-color: var(--retro-teal);
+    }
+    
+    .border-retro-amber {
+        border-color: var(--retro-amber);
+    }
+
+    /* 80s Panel/Surface Styling */
+    .retro-panel {
+        background: linear-gradient(135deg, oklch(0.18 0.03 280) 0%, oklch(0.15 0.04 300) 100%);
+        border: 3px solid;
+        border-image: linear-gradient(45deg, var(--retro-magenta), var(--retro-teal), var(--retro-amber)) 1;
+        box-shadow: 
+            0 0 20px rgba(255, 0, 128, 0.4),
+            0 0 40px rgba(0, 255, 255, 0.2),
+            inset 0 0 60px rgba(255, 0, 128, 0.05);
+    }
+
+    .retro-panel-hover {
+        background: linear-gradient(135deg, oklch(0.18 0.03 280) 0%, oklch(0.15 0.04 300) 100%);
+        border: 3px solid;
+        border-image: linear-gradient(45deg, var(--retro-magenta), var(--retro-teal), var(--retro-amber)) 1;
+        box-shadow: 
+            0 0 20px rgba(255, 0, 128, 0.4),
+            0 0 40px rgba(0, 255, 255, 0.2),
+            inset 0 0 60px rgba(255, 0, 128, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .retro-panel-hover:hover {
+        box-shadow: 
+            0 0 30px rgba(255, 0, 128, 0.6),
+            0 0 60px rgba(0, 255, 255, 0.4),
+            0 0 80px rgba(255, 200, 0, 0.2),
+            inset 0 0 80px rgba(255, 0, 128, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* 80s Neon Glow Effects */
+    .retro-glow-magenta {
+        text-shadow: 
+            0 0 10px var(--retro-magenta),
+            0 0 20px var(--retro-magenta),
+            0 0 40px var(--retro-magenta),
+            0 0 80px rgba(255, 0, 128, 0.5);
+    }
+    
+    .retro-glow-teal {
+        text-shadow: 
+            0 0 10px var(--retro-teal),
+            0 0 20px var(--retro-teal),
+            0 0 40px var(--retro-teal),
+            0 0 80px rgba(0, 255, 255, 0.5);
+    }
+
+    .retro-glow-amber {
+        text-shadow: 
+            0 0 10px var(--retro-amber),
+            0 0 20px var(--retro-amber),
+            0 0 40px var(--retro-amber),
+            0 0 80px rgba(255, 200, 0, 0.5);
+    }
+    
+    .retro-glow-button {
+        box-shadow: 
+            0 0 15px var(--retro-magenta),
+            0 0 30px var(--retro-magenta),
+            inset 0 0 15px rgba(255, 0, 128, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .retro-glow-button:hover {
+        box-shadow: 
+            0 0 20px var(--retro-magenta),
+            0 0 40px var(--retro-magenta),
+            0 0 60px rgba(255, 0, 128, 0.6),
+            inset 0 0 20px rgba(255, 0, 128, 0.4);
+        transform: scale(1.05);
+    }
+
+    /* 80s Grid Lines Effect */
+    .retro-grid {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .retro-grid::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, 0.15) 25%, rgba(0, 255, 255, 0.15) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.15) 75%, rgba(0, 255, 255, 0.15) 76%, transparent 77%, transparent),
+            linear-gradient(90deg, transparent 24%, rgba(255, 0, 128, 0.15) 25%, rgba(255, 0, 128, 0.15) 26%, transparent 27%, transparent 74%, rgba(255, 0, 128, 0.15) 75%, rgba(255, 0, 128, 0.15) 76%, transparent 77%, transparent);
+        background-size: 50px 50px;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* 80s Chrome Effect */
+    .retro-chrome {
+        background: linear-gradient(
+            180deg,
+            var(--retro-teal) 0%,
+            var(--retro-magenta) 50%,
+            var(--retro-amber) 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 10px rgba(255, 0, 128, 0.5));
+    }
+
+    /* 80s Card Shine Effect */
+    .retro-card {
+        position: relative;
+    }
+    
+    .retro-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 0, 128, 0.2) 50%,
+            transparent 100%
+        );
+        transition: left 0.5s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    .retro-card:hover::before {
+        left: 100%;
+    }
+
+    /* 80s Geometric Borders */
+    .retro-border-clip {
+        clip-path: polygon(
+            0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px,
+            100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px)
+        );
+    }
+
+    /* 80s Animations */
+    @keyframes retro-pulse {
+        0%, 100% { 
+            opacity: 1;
+            text-shadow: 
+                0 0 10px var(--retro-magenta),
+                0 0 20px var(--retro-magenta),
+                0 0 40px var(--retro-magenta);
+        }
+        50% { 
+            opacity: 0.8;
+            text-shadow: 
+                0 0 20px var(--retro-magenta),
+                0 0 40px var(--retro-magenta),
+                0 0 80px var(--retro-magenta);
+        }
+    }
+    
+    @keyframes retro-flicker {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.95; }
+    }
+    
+    @keyframes retro-scan {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(100%); }
+    }
+
+    @keyframes retro-glow-pulse {
+        0%, 100% {
+            box-shadow: 
+                0 0 15px var(--retro-magenta),
+                0 0 30px var(--retro-magenta);
+        }
+        50% {
+            box-shadow: 
+                0 0 25px var(--retro-magenta),
+                0 0 50px var(--retro-magenta),
+                0 0 75px rgba(255, 0, 128, 0.5);
+        }
+    }
+
+    /* Apply subtle flicker to body */
+    body {
+        animation: retro-flicker 0.15s infinite;
+    }
+
+    /* Typography utilities */
+    .retro-heading {
+        font-weight: 900;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+
+    .retro-subheading {
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .retro-body {
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        line-height: 1.6;
+    }
+
+    /* Spacing utilities */
+    .retro-spacing-sm {
+        @apply space-y-3;
+    }
+
+    .retro-spacing-md {
+        @apply space-y-5;
+    }
+
+    .retro-spacing-lg {
+        @apply space-y-8;
+    }
+}

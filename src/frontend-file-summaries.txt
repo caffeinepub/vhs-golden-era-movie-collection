@@ -1,0 +1,16 @@
+{
+  "frontend/src/App.tsx": "Main application component with theme provider set to dark mode, VHS effects, background music, header, movie grid, footer, and add movie dialog; uses 1980s retro aesthetic throughout.",
+  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations including fetching movies with pagination, filtering by genre, managing genres, and CRUD operations for movies.",
+  "frontend/src/components/Header.tsx": "Header component with 1980s styling that now guards the Add button with authentication check, showing error toast if user is not logged in.",
+  "frontend/src/components/Footer.tsx": "Footer with 1980s retro styling using neon teal/magenta/amber colors, geometric grid overlay, bold uppercase typography, pulsing heart icon, and VCR-style control text.",
+  "frontend/src/components/MovieGrid.tsx": "Movie grid with 1980s retro styling for loading skeletons, empty states, and pagination controls using neon teal/magenta/amber colors, bold geometric typography, and diamond navigation indicators.",
+  "frontend/src/components/MovieCard.tsx": "Movie card with authentic 80s design that conditionally shows the Delete button only to movie owners, using ownership helper and error normalizer for authorization checks.",
+  "frontend/src/components/AddMovieDialog.tsx": "Add movie dialog with bold 1980s styling that now guards both dialog opening and submission with authentication checks, using error normalizer for backend authorization failures.",
+  "frontend/src/components/VHSEffects.tsx": "Component rendering 80s-style visual effects including neon grid background, geometric pattern overlay, animated canvas glitch effects with scan lines and pixel noise, and retro grid overlay for authentic period aesthetic.",
+  "frontend/src/components/BackgroundMusic.tsx": "Floating audio control button that manages auto-playing synthwave background music with mute/unmute toggle.",
+  "frontend/src/index.css": "Global styles with authentic 1980s neon theme using hot pink/magenta, electric teal, and amber colors on charcoal background; includes retro panel styling, neon glow effects, grid overlays, chrome gradients, geometric borders, and bold Impact-based typography with extensive letter-spacing.",
+  "frontend/tailwind.config.js": "Tailwind configuration extended with 1980s retro color tokens (magenta, teal, amber, purple, charcoal), custom retro shadow utilities, and zero border radius for sharp geometric aesthetic.",
+  "frontend/src/components/MovieDetailDialog.tsx": "Enlarged movie detail modal with 1980s aesthetic featuring neon gradient borders, geometric diamond photo indicators, bold uppercase typography, retro teal/magenta/amber color scheme, and prominent grid overlay effects.",
+  "frontend/src/utils/movieOwnership.ts": "Helper utility to check if the current user is the owner/creator of a movie by comparing Principal IDs, now accepting Identity | null | undefined.",
+  "frontend/src/utils/errors.ts": "Error normalization utility that maps backend authorization errors to clear English user-facing messages."
+}

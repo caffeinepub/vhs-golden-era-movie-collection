@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [
+    "Add authorization rules to prevent unauthenticated/other users from editing/deleting a user's movie collection (owner-only write access; guests read-only)."
+  ],
+  "known_issues": [
+    "Currently other site visitors can delete or modify the user's movies (missing/incorrect access control)."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-update-the-frontend-to-prevent-guests-other-users-from-attempting-restricted-actions-hide-or-disable-the-delete-action-when-the-current-identity-is-not-the-movie-owner-and-prevent-opening-submitting-the-add-movie-dialog-when-the-user-is-not-authenticated",
+      "title": "Update the frontend to prevent guests/other users from attempting restricted actions: hide or disable the Delete action when the current identity is not the movie owner, and prevent opening/submitting the Add Movie dialog when the user is not authenticated.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Restrict permissions so site visitors/guests cannot modify or delete the user's movies (access control/authorization)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add backend authorization so only the movie creator (owner) can delete their movie, and unauthenticated (anonymous) callers cannot add or delete movies.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Expose movie ownership information to the frontend so the UI can determine whether the current user is allowed to delete a given movie.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Prevent guests and other visitors from modifying or deleting the owner's movies",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

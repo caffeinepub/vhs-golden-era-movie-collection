@@ -1,0 +1,75 @@
+{
+  "kind": "build_request",
+  "title": "Prevent guests and other visitors from modifying or deleting the owner's movies",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add backend authorization so only the movie creator (owner) can delete their movie, and unauthenticated (anonymous) callers cannot add or delete movies.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "другие  посетители сайта могут удалить мои фильмы?  нужно сделать так чтоб гости сайта не могли ничего делать с моими фильмами"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When a movie is created, the backend stores the caller Principal as the movie owner.",
+        "Calling deleteMovie(id) from any Principal other than the stored owner fails (traps/returns an error) and the movie remains unchanged.",
+        "Calling addMovie(...) from an anonymous Principal fails (traps/returns an error) and no movie is created.",
+        "Unauthenticated users can still read/browse movies via query methods (getMovies, getMovie, filterByGenre, getAllGenres)."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Expose movie ownership information to the frontend so the UI can determine whether the current user is allowed to delete a given movie.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "нужно сделать так чтоб гости сайта не могли ничего делать с моими фильмами"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Movie records returned from getMovies/getMovie/filterByGenre include an owner identifier (Principal) sufficient for the frontend to compare with the current identity principal.",
+        "The generated frontend backend types compile successfully after the backend interface change."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Update the frontend to prevent guests/other users from attempting restricted actions: hide or disable the Delete action when the current identity is not the movie owner, and prevent opening/submitting the Add Movie dialog when the user is not authenticated.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "гости сайта не могли ничего делать с моими фильмами"
+        ]
+      },
+      "acceptanceCriteria": [
+        "If the viewer is anonymous, the Add button does not allow adding a movie (either disabled or replaced with a login-required flow), and the dialog cannot successfully submit.",
+        "If the viewer is not the owner of a movie, the Delete button/action for that movie is not available (hidden or disabled) and cannot be triggered through the UI.",
+        "If the backend rejects add/delete due to authorization, the UI shows a clear error toast/message in English (e.g., 'You are not authorized to perform this action.')."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit files under frontend/src/components/ui (read-only).",
+    "Do not edit immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx.",
+    "Keep all Motoko logic in the single actor in backend/main.mo; do not introduce additional backend services."
+  ],
+  "nonGoals": [
+    "Implementing multi-user collaboration or shared collections.",
+    "Adding edit/update functionality for movies (only secure existing add/delete).",
+    "Adding third-party authentication (only Internet Identity is supported)."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

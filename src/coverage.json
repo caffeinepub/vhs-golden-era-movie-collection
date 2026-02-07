@@ -1,0 +1,74 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-07T06:07:20.740Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 1,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Add backend authorization so only the movie creator (owner) can delete their movie, and unauthenticated (anonymous) callers cannot add or delete movies.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Expose movie ownership information to the frontend so the UI can determine whether the current user is allowed to delete a given movie.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Update the frontend to prevent guests/other users from attempting restricted actions: hide or disable the Delete action when the current identity is not the movie owner, and prevent opening/submitting the Add Movie dialog when the user is not authenticated.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/movieOwnership.ts",
+          "frontend/src/utils/errors.ts",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/AddMovieDialog.tsx",
+          "frontend/src/components/MovieCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/movieOwnership.ts",
+          "frontend/src/utils/errors.ts",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/AddMovieDialog.tsx",
+          "frontend/src/components/MovieCard.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/AddMovieDialog.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/MovieCard.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/utils/errors.ts",
+    "frontend/src/utils/movieOwnership.ts",
+    "frontend/src/utils/urlParams.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

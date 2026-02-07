@@ -1,0 +1,29 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-update-the-frontend-to-prevent-guests-other-users-from-attempting-restricted-actions-hide-or-disable-the-delete-action-when-the-current-identity-is-not-the-movie-owner-and-prevent-opening-submitting-the-add-movie-dialog-when-the-user-is-not-authenticated",
+      "featureTitle": "Update the frontend to prevent guests/other users from attempting restricted actions: hide or disable the Delete action when the current identity is not the movie owner, and prevent opening/submitting the Add Movie dialog when the user is not authenticated.",
+      "files": [
+        "frontend/src/components/AddMovieDialog.tsx",
+        "frontend/src/components/Header.tsx",
+        "frontend/src/components/MovieCard.tsx",
+        "frontend/src/utils/errors.ts",
+        "frontend/src/utils/movieOwnership.ts"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "core-infrastructure@1.0.2",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
