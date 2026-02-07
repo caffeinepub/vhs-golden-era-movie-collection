@@ -1,64 +1,82 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-07T08:06:48.557Z",
+  "generatedAt": "2026-02-07T08:17:02.564Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 3,
-    "implemented": 2,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add a backend query that returns pagination metadata for the movie list so the frontend can render numbered page controls (at minimum: totalPages for the current ITEMS_PER_PAGE).",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "summary": "Add Progressive Web App (PWA) support so the catalog can be installed as a home-screen app icon on iOS and Android, including a web app manifest, required icons, and appropriate meta tags.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/manifest.webmanifest",
+          "frontend/public/assets/generated/app-icon.dim_512x512.png",
+          "frontend/public/assets/generated/app-icon.dim_192x192.png",
+          "frontend/public/assets/generated/app-icon-maskable.dim_512x512.png",
+          "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
+          "frontend/index.html"
+        ],
+        "matchedFiles": [
+          "frontend/public/manifest.webmanifest",
+          "frontend/public/assets/generated/app-icon.dim_512x512.png",
+          "frontend/public/assets/generated/app-icon.dim_192x192.png",
+          "frontend/public/assets/generated/app-icon-maskable.dim_512x512.png",
+          "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
+          "frontend/index.html"
+        ]
       },
       {
         "id": "REQ-2",
-        "summary": "Update the frontend movie grid pagination UI to include clickable numbered page controls so users can directly jump to a specific page (while keeping existing Back/Next controls).",
+        "summary": "Implement a service worker to enable offline-capable app-shell behavior (cache static assets so the installed app can load a basic UI while offline), without modifying immutable entry files (e.g., frontend/src/main.tsx).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/PaginationControls.tsx",
-          "frontend/src/components/MovieGrid.tsx",
-          "frontend/src/index.css"
+          "frontend/public/sw.js",
+          "frontend/src/App.tsx",
+          "frontend/src/components/MovieGrid.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/PaginationControls.tsx",
+          "frontend/public/sw.js",
+          "frontend/src/App.tsx",
           "frontend/src/components/MovieGrid.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Add a React Query hook to fetch the new backend pagination metadata and wire it into MovieGrid so the numbered pagination reflects the real total pages.",
+        "summary": "Add an in-app, English help entry that explains how to install the catalog on mobile (Android Chrome and iOS Safari), placed in an existing discoverable UI location (e.g., Footer next to the publishing help).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/MovieGrid.tsx"
+          "frontend/src/components/InstallHelpDialog.tsx",
+          "frontend/src/components/Footer.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/MovieGrid.tsx"
+          "frontend/src/components/InstallHelpDialog.tsx",
+          "frontend/src/components/Footer.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
+    "frontend/index.html",
+    "frontend/public/assets/generated/app-icon-maskable.dim_512x512.png",
+    "frontend/public/assets/generated/app-icon.dim_192x192.png",
+    "frontend/public/assets/generated/app-icon.dim_512x512.png",
+    "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
+    "frontend/public/manifest.webmanifest",
+    "frontend/public/sw.js",
+    "frontend/src/App.tsx",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/InstallHelpDialog.tsx",
     "frontend/src/components/MovieGrid.tsx",
-    "frontend/src/components/PaginationControls.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

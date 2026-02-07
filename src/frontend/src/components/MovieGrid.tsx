@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGetMovies, useFilterByGenre, useGetPaginationInfo } from '../hooks/useQueries';
 import MovieCard from './MovieCard';
 import MovieDetailDialog from './MovieDetailDialog';
 import PaginationControls from './PaginationControls';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Film, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Film, AlertCircle, WifiOff } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Movie } from '../backend';
 import { normalizeError } from '../utils/errors';
@@ -18,7 +18,21 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const { 
     data: paginatedMovies, 
     isLoading: isPaginatedLoading,
@@ -60,6 +74,24 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
     setPage(newPageIndex);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Show offline message when offline
+  if (!isOnline) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32">
+        <div className="relative mb-10">
+          <WifiOff className="w-40 h-40 text-retro-amber/40" />
+          <div className="absolute inset-0 blur-3xl bg-retro-amber/30" />
+        </div>
+        <h2 className="text-4xl retro-heading text-retro-amber mb-4 retro-glow-amber">
+          OFFLINE MODE
+        </h2>
+        <p className="text-xl retro-body text-retro-teal text-center max-w-md">
+          You're currently offline. Connect to the internet to view your movie collection.
+        </p>
+      </div>
+    );
+  }
 
   // Show loading state during initial load or when actor is initializing
   if (isLoading || (isFetching && !movies)) {

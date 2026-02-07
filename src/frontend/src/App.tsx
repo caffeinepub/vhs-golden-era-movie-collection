@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import Header from './components/Header';
@@ -10,6 +10,22 @@ import BackgroundMusic from './components/BackgroundMusic';
 
 function App() {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Register service worker for PWA offline support
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then((registration) => {
+            console.log('[SW] Registered:', registration.scope);
+          })
+          .catch((error) => {
+            console.error('[SW] Registration failed:', error);
+          });
+      });
+    }
+  }, []);
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>

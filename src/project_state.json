@@ -2,21 +2,32 @@
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
   "summary": "New project",
-  "architectural_notes": [],
+  "architectural_notes": [
+    "Support PWA installation: add web app manifest and required assets/metadata so the catalog can be added to the phone home screen and opened like an app."
+  ],
   "known_issues": [],
   "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Neon retro VHS-style app icon with a stylized cassette and glow (app-icon.dim_512x512.png)\n- Neon retro VHS-style app icon with a stylized cassette and glow (app-icon.dim_192x192.png)\n- Neon retro VHS-style app icon, maskable-safe with generous padding and centered design (app-icon-maskable.dim_512x512.png)\n- Apple touch icon variant in the same style (apple-touch-icon.dim_180x180.png)",
   "existing_features": [
     {
-      "id": "feature-update-the-frontend-movie-grid-pagination-ui-to-include-clickable-numbered-page-controls-so-users-can-directly-jump-to-a-specific-page-while-keeping-existing-back-next-controls",
-      "title": "Update the frontend movie grid pagination UI to include clickable numbered page controls so users can directly jump to a specific page (while keeping existing Back/Next controls).",
+      "id": "feature-add-progressive-web-app-pwa-support-so-the-catalog-can-be-installed-as-a-home-screen-app-icon-on-ios-and-android-including-a-web-app-manifest-required-icons-and-appropriate-meta-tags",
+      "title": "Add Progressive Web App (PWA) support so the catalog can be installed as a home-screen app icon on iOS and Android, including a web app manifest, required icons, and appropriate meta tags.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-service-worker-to-enable-offline-capable-app-shell-behavior-cache-static-assets-so-the-installed-app-can-load-a-basic-ui-while-offline-without-modifying-immutable-entry-files-e-g-frontend-src-main-tsx",
+      "title": "Implement a service worker to enable offline-capable app-shell behavior (cache static assets so the installed app can load a basic UI while offline), without modifying immutable entry files (e.g., frontend/src/main.tsx).",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-react-query-hook-to-fetch-the-new-backend-pagination-metadata-and-wire-it-into-moviegrid-so-the-numbered-pagination-reflects-the-real-total-pages",
-      "title": "Add a React Query hook to fetch the new backend pagination metadata and wire it into MovieGrid so the numbered pagination reflects the real total pages.",
+      "id": "feature-add-an-in-app-english-help-entry-that-explains-how-to-install-the-catalog-on-mobile-android-chrome-and-ios-safari-placed-in-an-existing-discoverable-ui-location-e-g-footer-next-to-the-publishing-help",
+      "title": "Add an in-app, English help entry that explains how to install the catalog on mobile (Android Chrome and iOS Safari), placed in an existing discoverable UI location (e.g., Footer next to the publishing help).",
       "reqIds": [
         "REQ-3"
       ],
@@ -26,20 +37,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add page number pagination controls so users can select which page to switch to",
+      "summary": "Add ability to install the catalog site as a home-screen app icon (PWA-style) on mobile",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Add a backend query that returns pagination metadata for the movie list so the frontend can render numbered page controls (at minimum: totalPages for the current ITEMS_PER_PAGE).",
-      "reqIds": [
-        "REQ-1"
-      ],
       "status": "pending"
     }
   ],
-  "projectName": "Add numbered pagination controls to movie grid",
+  "projectName": "Make the catalog installable on mobile as a home-screen app (PWA)",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

@@ -2,11 +2,33 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-frontend-movie-grid-pagination-ui-to-include-clickable-numbered-page-controls-so-users-can-directly-jump-to-a-specific-page-while-keeping-existing-back-next-controls",
-      "featureTitle": "Update the frontend movie grid pagination UI to include clickable numbered page controls so users can directly jump to a specific page (while keeping existing Back/Next controls).",
+      "featureId": "feature-add-progressive-web-app-pwa-support-so-the-catalog-can-be-installed-as-a-home-screen-app-icon-on-ios-and-android-including-a-web-app-manifest-required-icons-and-appropriate-meta-tags",
+      "featureTitle": "Add Progressive Web App (PWA) support so the catalog can be installed as a home-screen app icon on iOS and Android, including a web app manifest, required icons, and appropriate meta tags.",
       "files": [
-        "frontend/src/components/MovieGrid.tsx",
-        "frontend/src/components/PaginationControls.tsx"
+        "frontend/index.html",
+        "frontend/public/manifest.webmanifest"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "core-infrastructure@1.0.2",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-service-worker-to-enable-offline-capable-app-shell-behavior-cache-static-assets-so-the-installed-app-can-load-a-basic-ui-while-offline-without-modifying-immutable-entry-files-e-g-frontend-src-main-tsx",
+      "featureTitle": "Implement a service worker to enable offline-capable app-shell behavior (cache static assets so the installed app can load a basic UI while offline), without modifying immutable entry files (e.g., frontend/src/main.tsx).",
+      "files": [
+        "frontend/public/sw.js",
+        "frontend/src/App.tsx",
+        "frontend/src/components/MovieGrid.tsx"
       ],
       "components": [
         "blob-storage@4.0.0",
@@ -23,11 +45,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-react-query-hook-to-fetch-the-new-backend-pagination-metadata-and-wire-it-into-moviegrid-so-the-numbered-pagination-reflects-the-real-total-pages",
-      "featureTitle": "Add a React Query hook to fetch the new backend pagination metadata and wire it into MovieGrid so the numbered pagination reflects the real total pages.",
+      "featureId": "feature-add-an-in-app-english-help-entry-that-explains-how-to-install-the-catalog-on-mobile-android-chrome-and-ios-safari-placed-in-an-existing-discoverable-ui-location-e-g-footer-next-to-the-publishing-help",
+      "featureTitle": "Add an in-app, English help entry that explains how to install the catalog on mobile (Android Chrome and iOS Safari), placed in an existing discoverable UI location (e.g., Footer next to the publishing help).",
       "files": [
-        "frontend/src/components/MovieGrid.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/components/InstallHelpDialog.tsx"
       ],
       "components": [
         "blob-storage@4.0.0",

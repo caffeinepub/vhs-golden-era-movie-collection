@@ -1,5 +1,6 @@
 import { Heart } from 'lucide-react';
 import PublishingHelpDialog from './PublishingHelpDialog';
+import InstallHelpDialog from './InstallHelpDialog';
 
 export default function Footer() {
   return (
@@ -24,8 +25,9 @@ export default function Footer() {
           <p className="text-retro-amber/80 text-base mt-4 retro-subheading retro-glow-amber">
             ◄◄ REWIND • PLAY • FAST FORWARD ►►
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap justify-center gap-4">
             <PublishingHelpDialog />
+            <InstallHelpDialog />
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
 {
-  "frontend/src/App.tsx": "Main application component with theme provider set to dark mode, VHS effects, background music, header, movie grid, footer, and add movie dialog; uses 1980s retro aesthetic throughout.",
+  "frontend/src/App.tsx": "Main application component with theme provider, VHS effects, background music, header, movie grid, footer, add movie dialog, and service worker registration for PWA offline support.",
   "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for backend operations including movies, genres, and pagination info, with derived loading/fetched state accounting for actor initialization and proper cache invalidation.",
   "frontend/src/components/Header.tsx": "Header component with genre selector, authentication controls, and English UI text for the 80s cinema retro collection theme.",
-  "frontend/src/components/Footer.tsx": "Footer with 1980s retro styling, branding attribution, VCR-style text, and new Help button that opens the publishing guide dialog.",
-  "frontend/src/components/MovieGrid.tsx": "Movie grid component with proper loading, error, and empty state handling that includes both Back/Next navigation and numbered pagination controls (hidden when filtering by genre), with graceful degradation if pagination metadata fails.",
+  "frontend/src/components/Footer.tsx": "Footer with 1980s retro styling, branding attribution, VCR-style text, publishing help button, and new install help button for phone installation instructions.",
+  "frontend/src/components/MovieGrid.tsx": "Movie grid component with proper loading, error, and empty state handling, Back/Next navigation, numbered pagination controls, and offline detection that shows a friendly offline message when navigator.onLine is false.",
   "frontend/src/components/MovieCard.tsx": "Movie card with authentic 80s design that conditionally shows the Delete button only to authenticated movie owners, using ownership helper and error normalizer for authorization checks.",
   "frontend/src/components/AddMovieDialog.tsx": "Add movie dialog with bold 1980s styling that guards both dialog opening and submission with authentication checks, using error normalizer for backend authorization failures.",
   "frontend/src/components/VHSEffects.tsx": "Component rendering 80s-style visual effects including neon grid background, geometric pattern overlay, animated canvas glitch effects with scan lines and pixel noise, and retro grid overlay for authentic period aesthetic.",
@@ -19,5 +19,9 @@
   "frontend/src/utils/urlParams.ts": "URL parameter utilities supporting both hash-only parameters (#token=value) and hash routes with query strings (#/route?token=value), with secure secret extraction that immediately clears sensitive data from the URL without page reload.",
   "frontend/src/components/PublishingHelpDialog.tsx": "In-app help dialog with comprehensive English publishing guide covering Draft-to-Live workflow, stopped canister troubleshooting, and about:blank login popup fixes, styled with 1980s retro aesthetic.",
   "frontend/docs/publishing.md": "Comprehensive English markdown documentation for publishing Draft to Live in Caffeine, including step-by-step checklist, troubleshooting for stopped canisters and login popup issues, best practices, and quick reference tables.",
-  "frontend/src/components/PaginationControls.tsx": "Reusable numbered pagination component with windowed page display, ellipses for large page counts, and 1980s retro styling that highlights the active page."
+  "frontend/src/components/PaginationControls.tsx": "Reusable numbered pagination component with windowed page display, ellipses for large page counts, and 1980s retro styling that highlights the active page.",
+  "frontend/index.html": "HTML entry point with PWA manifest link, theme-color meta, favicon references, and Apple-specific meta tags for iOS installability.",
+  "frontend/public/manifest.webmanifest": "Web app manifest defining the PWA name, icons, display mode (standalone), theme colors, and start URL for installability on Android and iOS.",
+  "frontend/public/sw.js": "Service worker implementing network-first caching strategy with offline fallback for navigation requests, skipping cross-origin requests to preserve Internet Identity authentication flows.",
+  "frontend/src/components/InstallHelpDialog.tsx": "Dialog component with English installation instructions for Android Chrome and iOS Safari, styled with 1980s retro aesthetic using shadcn-ui Dialog primitives."
 }

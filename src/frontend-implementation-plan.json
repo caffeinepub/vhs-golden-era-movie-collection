@@ -1,54 +1,95 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Numbered pagination controls for MovieGrid",
+  "title": "Add PWA installability, offline app-shell, and in-app install help",
   "requirements": [
     {
-      "id": "REQ-2",
-      "summary": "Add compact numbered pagination controls (with ellipses) to MovieGrid for the unfiltered movie list while keeping Back/Next behavior unchanged.",
+      "id": "REQ-1",
+      "summary": "Add PWA manifest, required icons, and installability meta tags for iOS and Android.",
       "acceptanceCriteria": [
-        "When not filtering by genre, the pagination area shows clickable page numbers and the current page is visually highlighted.",
-        "Clicking a page number loads that page via the existing paginated query and updates the current page indicator (page is 1-based in UI, but uses 0-based indexing internally).",
-        "Back/Next buttons continue to work and remain disabled appropriately at bounds (first/last page).",
-        "When a genre filter is active, numbered pagination controls are hidden (or disabled) consistently with the existing behavior (pagination is only for the unfiltered list).",
-        "If there are many pages, the UI does not render an excessively long row of buttons; it uses a compact windowed layout with ellipses (e.g., first/last + pages around current)."
+        "A valid web app manifest is available from the app origin (e.g., /manifest.webmanifest) and contains name/short_name, start_url, display, background_color, theme_color, and icon entries.",
+        "The app includes icon assets for common PWA sizes (at least 192x192 and 512x512, plus a maskable icon) and references them from the manifest.",
+        "frontend/index.html includes links/meta needed for installability (manifest link, theme-color, and Apple-specific tags such as apple-touch-icon and apple-mobile-web-app-capable where applicable).",
+        "On Android/Chrome, the site shows as installable (install prompt available via browser UI) and installs with the correct name and icons.",
+        "On iOS/Safari, “Add to Home Screen” creates a home-screen icon that launches the site in standalone mode (as supported by iOS)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/PaginationControls.tsx",
+          "path": "frontend/public/manifest.webmanifest",
           "operation": "create",
-          "description": "Create a reusable PaginationControls component that renders a compact, windowed set of numbered page buttons with ellipses and highlights the current page. It should accept currentPageIndex (0-based), totalPages (number), and onPageChange, and use existing shadcn-ui Button styling already present in the app. Verify the component's usage instructions before implementing."
+          "description": "Create a valid Web App Manifest with name/short_name, start_url, display (standalone), background_color, theme_color, and icon entries for 192x192, 512x512, and a 512x512 maskable icon."
+        },
+        {
+          "path": "frontend/public/assets/generated/app-icon.dim_512x512.png",
+          "operation": "create",
+          "description": "Add generated PWA icon asset at frontend/public/assets/generated/app-icon.dim_512x512.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/app-icon.dim_192x192.png",
+          "operation": "create",
+          "description": "Add generated PWA icon asset at frontend/public/assets/generated/app-icon.dim_192x192.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/app-icon-maskable.dim_512x512.png",
+          "operation": "create",
+          "description": "Add generated maskable PWA icon asset at frontend/public/assets/generated/app-icon-maskable.dim_512x512.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
+          "operation": "create",
+          "description": "Add generated Apple touch icon asset at frontend/public/assets/generated/apple-touch-icon.dim_180x180.png."
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Add PWA installability tags: link to /manifest.webmanifest, theme-color meta, favicon/icon links as needed, and Apple-specific meta/link tags (including apple-touch-icon using frontend/public/assets/generated/apple-touch-icon.dim_180x180.png and apple-mobile-web-app-capable)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement and register a service worker for offline-capable cached app-shell behavior without editing immutable entry files.",
+      "acceptanceCriteria": [
+        "A service worker is registered from a non-immutable file path (e.g., via code reachable from App.tsx or another editable module) and is active after a reload.",
+        "When offline, loading the installed app shows a basic cached shell (header/layout) rather than a blank page (dynamic content may show an offline message).",
+        "When online again, the app fetches fresh data normally; the service worker does not break authentication flows (Internet Identity login/logout still works)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/sw.js",
+          "operation": "create",
+          "description": "Create a service worker that caches an app-shell set (e.g., the HTML shell and critical same-origin static assets) and provides an offline navigation fallback so the UI renders while offline; avoid caching or interfering with Internet Identity-related cross-origin requests."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register the service worker from App.tsx (non-immutable path) on app load, with safe guards for unsupported browsers and localhost/dev behavior."
         },
         {
           "path": "frontend/src/components/MovieGrid.tsx",
           "operation": "modify",
-          "description": "Update MovieGrid to render PaginationControls alongside the existing Back/Next controls when selectedGenre is null. Ensure page number clicks call setPage with 0-based indices, current page is highlighted, and numbered controls are hidden when a genre filter is active."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Add/adjust minimal global utility classes (if needed) to support the visual highlighting of the active page number and compact pagination spacing consistent with the existing retro theme, without modifying any files under frontend/src/components/ui."
+          "description": "Add a lightweight offline-aware UI state (e.g., detect navigator.onLine and show an offline message in place of dynamic content) so offline loads present a usable shell rather than a blank screen."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Add a React Query hook for pagination metadata and wire it into MovieGrid to determine total pages and last-page bounds, with graceful fallback if metadata fails.",
+      "summary": "Add an in-app English “Install on phone” help entry in the existing Footer area with retro-styled instructions for Android and iOS.",
       "acceptanceCriteria": [
-        "A new query hook exists alongside useGetMovies/useFilterByGenre to fetch total pages (or equivalent) from the backend.",
-        "MovieGrid uses this metadata to determine the last page and to render the correct number of page buttons.",
-        "If the metadata request fails, MovieGrid still works with Back/Next pagination (graceful degradation), and errors follow the app’s existing error handling conventions."
+        "The UI includes an English “Install on phone” (or similar) action that opens a dialog or panel with platform-specific steps for Android and iOS.",
+        "Instructions include at minimum: Android (Chrome menu → Install app / Add to Home screen) and iOS (Share button → Add to Home Screen).",
+        "The new help UI matches the existing retro styling conventions used across the app."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a new React Query hook (e.g., useGetPaginationInfo or useGetTotalPages) that calls the existing backend capability for pagination metadata and returns loading/error states consistent with other hooks in this file."
+          "path": "frontend/src/components/InstallHelpDialog.tsx",
+          "operation": "create",
+          "description": "Create an InstallHelpDialog component using the existing shadcn-ui dialog primitives (Dialog, DialogTrigger, DialogContent, etc.) to present English installation steps for Android Chrome and iOS Safari in the app’s retro styling. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/MovieGrid.tsx",
+          "path": "frontend/src/components/Footer.tsx",
           "operation": "modify",
-          "description": "Wire the new pagination-metadata hook into MovieGrid (only for unfiltered browsing) to compute totalPages/lastPageIndex and drive numbered page rendering + Back/Next disabled state. Implement graceful degradation: if metadata is unavailable or errors, keep existing Back/Next behavior based on page bounds heuristic (e.g., page>0 and paginatedMovies.length===10) and avoid showing incorrect numbered controls."
+          "description": "Wire InstallHelpDialog into the existing Footer next to the publishing help entry, keeping the layout discoverable and consistent with current retro styling."
         }
       ]
     }

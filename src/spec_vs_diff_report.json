@@ -1,35 +1,30 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-07T08:06:48.555Z",
-  "summary": "Frontend adds a new PaginationControls component with windowed numbered pages and ellipses, and MovieGrid/hooks were updated to fetch and use pagination metadata. However, the backend change that actually exposes pagination metadata is not evidenced in the provided backend diff snippet, and the frontend’s graceful-degradation behavior appears incomplete when pagination metadata is unavailable without an explicit error.",
+  "generatedAt": "2026-02-07T08:17:02.562Z",
+  "summary": "PWA manifest and install-related meta tags were added, a service worker was added and registered from App.tsx, and an in-app “Install on phone” help dialog was added in the Footer. However, the required icon image assets themselves are not shown as added in the diff summary (only referenced).",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Backend exposes a new query method that returns pagination metadata for the movie list (at minimum totalPages based on ITEMS_PER_PAGE), query-only and non-trapping for 0 movies.",
-      "reason": "The frontend calls `actor.getPaginationInfo()` and imports `PaginationInfo`, but the backend diff excerpt does not show any new `getPaginationInfo` (or equivalent) query method implementation or return type. Since backend/main.mo is truncated before showing such a method, this requirement cannot be confirmed as implemented from the provided evidence.",
+      "requirement": "Include the required PWA icon assets (at least 192x192 and 512x512, plus a maskable icon, and an Apple touch icon) at the referenced paths.",
+      "reason": "The manifest and index.html reference icon files under /assets/generated/, but the diff summary does not show any added image files for these required icons, so installability may be incomplete.",
       "evidence": [
-        "backend/main.mo (truncated; no getPaginationInfo shown)",
-        "frontend/src/hooks/useQueries.ts (calls actor.getPaginationInfo())"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "If the pagination metadata request fails, MovieGrid still works with Back/Next pagination (graceful degradation).",
-      "reason": "MovieGrid’s fallback for `hasNextPage` is gated on `paginationError`, but if pagination metadata is unavailable/undefined without an error (e.g., not yet fetched, disabled, or returns unexpected), `totalPages` becomes 0 and `page < totalPages - 1` becomes false, which can incorrectly disable Next. This does not fully satisfy the “still works” graceful degradation expectation.",
-      "evidence": [
-        "frontend/src/components/MovieGrid.tsx (totalPages defaults to 0; hasNextPage uses `paginationError ? ... : page < totalPages - 1`)"
+        "frontend/public/manifest.webmanifest",
+        "frontend/index.html"
       ]
     }
   ],
   "hallucinated_features": [],
-  "confidence": 0.64,
+  "confidence": 0.74,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
+    "frontend/index.html",
+    "frontend/public/manifest.webmanifest",
+    "frontend/public/sw.js",
+    "frontend/src/App.tsx",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/InstallHelpDialog.tsx",
     "frontend/src/components/MovieGrid.tsx",
-    "frontend/src/components/PaginationControls.tsx",
-    "frontend/src/hooks/useQueries.ts",
     "project_state.json"
   ]
 }
