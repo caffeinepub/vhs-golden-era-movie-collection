@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { Movie, MovieId } from '../backend';
+import type { Movie, MovieId, PaginationInfo } from '../backend';
 import { ExternalBlob } from '../backend';
 
 export function useGetMovies(page: number) {
@@ -20,6 +20,33 @@ export function useGetMovies(page: number) {
     },
     enabled: !!actor && !actorFetching,
     placeholderData: (previousData) => previousData,
+    retry: 1,
+  });
+
+  // Return custom state that properly reflects actor dependency
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && !actorFetching && query.isFetched,
+  };
+}
+
+export function useGetPaginationInfo() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery<PaginationInfo>({
+    queryKey: ['paginationInfo'],
+    queryFn: async () => {
+      if (!actor) {
+        console.error('[useGetPaginationInfo] Actor not available during query execution');
+        throw new Error('Actor not initialized');
+      }
+      console.log('[useGetPaginationInfo] Fetching pagination info');
+      const info = await actor.getPaginationInfo();
+      console.log('[useGetPaginationInfo] Total pages:', info.totalPages);
+      return info;
+    },
+    enabled: !!actor && !actorFetching,
     retry: 1,
   });
 
@@ -113,6 +140,7 @@ export function useAddMovie() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movies'] });
       queryClient.invalidateQueries({ queryKey: ['genres'] });
+      queryClient.invalidateQueries({ queryKey: ['paginationInfo'] });
     },
   });
 }
@@ -129,6 +157,7 @@ export function useDeleteMovie() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movies'] });
       queryClient.invalidateQueries({ queryKey: ['genres'] });
+      queryClient.invalidateQueries({ queryKey: ['paginationInfo'] });
     },
   });
 }

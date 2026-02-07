@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-07T07:09:52.676Z",
+  "generatedAt": "2026-02-07T08:06:48.557Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -12,44 +12,53 @@
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Restore service by deploying an upgrade/build that brings backend canister `gnqlv-giaaa-aaaaq-awbrq-cai` back to a running state without losing existing movie data.",
+        "summary": "Add a backend query that returns pagination metadata for the movie list so the frontend can render numbered page controls (at minimum: totalPages for the current ITEMS_PER_PAGE).",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Update frontend error normalization to explicitly detect the \"canister is stopped\" (Reject code 5) failure and show a clear English message that the backend canister is stopped and the user should reload after it is restarted (instead of the generic “Connection is being established…” message).",
+        "summary": "Update the frontend movie grid pagination UI to include clickable numbered page controls so users can directly jump to a specific page (while keeping existing Back/Next controls).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/errors.ts",
-          "frontend/src/components/MovieGrid.tsx"
+          "frontend/src/components/PaginationControls.tsx",
+          "frontend/src/components/MovieGrid.tsx",
+          "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/utils/errors.ts"
+          "frontend/src/components/PaginationControls.tsx",
+          "frontend/src/components/MovieGrid.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
+        "summary": "Add a React Query hook to fetch the new backend pagination metadata and wire it into MovieGrid so the numbered pagination reflects the real total pages.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/urlParams.ts",
-          "frontend/src/hooks/useActor.ts"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/MovieGrid.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/utils/urlParams.ts"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/MovieGrid.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/utils/errors.ts",
-    "frontend/src/utils/urlParams.ts",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/MovieGrid.tsx",
+    "frontend/src/components/PaginationControls.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

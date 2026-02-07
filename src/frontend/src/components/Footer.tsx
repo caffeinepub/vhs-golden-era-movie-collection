@@ -1,4 +1,5 @@
 import { Heart } from 'lucide-react';
+import PublishingHelpDialog from './PublishingHelpDialog';
 
 export default function Footer() {
   return (
@@ -23,6 +24,9 @@ export default function Footer() {
           <p className="text-retro-amber/80 text-base mt-4 retro-subheading retro-glow-amber">
             ◄◄ REWIND • PLAY • FAST FORWARD ►►
           </p>
+          <div className="mt-6">
+            <PublishingHelpDialog />
+          </div>
         </div>
       </div>
     </footer>

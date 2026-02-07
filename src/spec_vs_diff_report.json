@@ -1,42 +1,35 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-07T07:09:52.673Z",
-  "summary": "Frontend adds explicit normalization for \"canister is stopped\" (Reject code 5) errors, but no backend changes are shown to restore the stopped canister. URL hash token cleanup changes are present but truncated, so it’s not fully verifiable that all REQ-3 acceptance cases are implemented and invoked.",
+  "generatedAt": "2026-02-07T08:06:48.555Z",
+  "summary": "Frontend adds a new PaginationControls component with windowed numbered pages and ellipses, and MovieGrid/hooks were updated to fetch and use pagination metadata. However, the backend change that actually exposes pagination metadata is not evidenced in the provided backend diff snippet, and the frontend’s graceful-degradation behavior appears incomplete when pagination metadata is unavailable without an explicit error.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Restore service by deploying an upgrade/build that brings backend canister `gnqlv-giaaa-aaaaq-awbrq-cai` back to a running state without losing existing movie data.",
-      "reason": "The diff shows no changes to the backend Motoko actor (`backend/main.mo`) or any backend deployment/upgrade-related code; only frontend utilities and metadata files were modified.",
+      "requirement": "Backend exposes a new query method that returns pagination metadata for the movie list (at minimum totalPages based on ITEMS_PER_PAGE), query-only and non-trapping for 0 movies.",
+      "reason": "The frontend calls `actor.getPaginationInfo()` and imports `PaginationInfo`, but the backend diff excerpt does not show any new `getPaginationInfo` (or equivalent) query method implementation or return type. Since backend/main.mo is truncated before showing such a method, this requirement cannot be confirmed as implemented from the provided evidence.",
       "evidence": [
-        "Modified files list does not include backend/main.mo",
-        "frontend/src/utils/errors.ts",
-        "frontend/src/utils/urlParams.ts"
+        "backend/main.mo (truncated; no getPaginationInfo shown)",
+        "frontend/src/hooks/useQueries.ts (calls actor.getPaginationInfo())"
       ]
     },
     {
       "id": "REQ-3",
-      "requirement": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
-      "reason": "`clearParamFromHash` is introduced/modified and documented to support the required hash formats, but the diff content is truncated before the implementation details and does not show any call site proving it is executed after reading/storing the token or that it preserves other hash routes/params exactly as required.",
+      "requirement": "If the pagination metadata request fails, MovieGrid still works with Back/Next pagination (graceful degradation).",
+      "reason": "MovieGrid’s fallback for `hasNextPage` is gated on `paginationError`, but if pagination metadata is unavailable/undefined without an error (e.g., not yet fetched, disabled, or returns unexpected), `totalPages` becomes 0 and `page < totalPages - 1` becomes false, which can incorrectly disable Next. This does not fully satisfy the “still works” graceful degradation expectation.",
       "evidence": [
-        "frontend/src/utils/urlParams.ts (truncated; clearParamFromHash implementation/call site not fully shown)"
+        "frontend/src/components/MovieGrid.tsx (totalPages defaults to 0; hasNextPage uses `paginationError ? ... : page < totalPages - 1`)"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Additional error normalization categories beyond stopped-canister detection (actor initialization errors, access control initialization errors, authorization/authentication/ownership-specific messages) plus extra console.error logging.",
-      "reason": "BuildRequest REQ-2 only asks to detect stopped-canister (Reject code 5) and show a specific English message with a recovery action; the diff adds multiple other message mappings and logging that are not explicitly requested.",
-      "evidence": [
-        "frontend/src/utils/errors.ts"
-      ]
-    }
-  ],
-  "confidence": 0.66,
+  "hallucinated_features": [],
+  "confidence": 0.64,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/utils/errors.ts",
-    "frontend/src/utils/urlParams.ts",
+    "frontend/src/components/MovieGrid.tsx",
+    "frontend/src/components/PaginationControls.tsx",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json"
   ]
 }

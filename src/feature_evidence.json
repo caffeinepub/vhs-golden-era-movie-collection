@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-frontend-error-normalization-to-explicitly-detect-the-canister-is-stopped-reject-code-5-failure-and-show-a-clear-english-message-that-the-backend-canister-is-stopped-and-the-user-should-reload-after-it-is-restarted-instead-of-the-generic-connection-is-being-established-message",
-      "featureTitle": "Update frontend error normalization to explicitly detect the \"canister is stopped\" (Reject code 5) failure and show a clear English message that the backend canister is stopped and the user should reload after it is restarted (instead of the generic “Connection is being established…” message).",
+      "featureId": "feature-update-the-frontend-movie-grid-pagination-ui-to-include-clickable-numbered-page-controls-so-users-can-directly-jump-to-a-specific-page-while-keeping-existing-back-next-controls",
+      "featureTitle": "Update the frontend movie grid pagination UI to include clickable numbered page controls so users can directly jump to a specific page (while keeping existing Back/Next controls).",
       "files": [
-        "frontend/src/utils/errors.ts"
+        "frontend/src/components/MovieGrid.tsx",
+        "frontend/src/components/PaginationControls.tsx"
       ],
       "components": [
         "blob-storage@4.0.0",
@@ -22,10 +23,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-fix-url-hash-secret-cleanup-so-that-caffeineadmintoken-hash-parameters-without-a-is-also-cleared-from-the-address-bar-after-being-read-and-stored-in-sessionstorage-while-preserving-other-hash-content-routes-when-present",
-      "featureTitle": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
+      "featureId": "feature-add-a-react-query-hook-to-fetch-the-new-backend-pagination-metadata-and-wire-it-into-moviegrid-so-the-numbered-pagination-reflects-the-real-total-pages",
+      "featureTitle": "Add a React Query hook to fetch the new backend pagination metadata and wire it into MovieGrid so the numbered pagination reflects the real total pages.",
       "files": [
-        "frontend/src/utils/urlParams.ts"
+        "frontend/src/components/MovieGrid.tsx",
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "blob-storage@4.0.0",

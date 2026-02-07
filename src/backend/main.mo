@@ -1,17 +1,15 @@
-import Nat "mo:core/Nat";
-import Text "mo:core/Text";
-import Principal "mo:core/Principal";
-import Array "mo:core/Array";
-import List "mo:core/List";
-import Int "mo:core/Int";
 import Map "mo:core/Map";
+import Nat "mo:core/Nat";
+import Principal "mo:core/Principal";
+import Text "mo:core/Text";
+import Array "mo:core/Array";
+import Iter "mo:core/Iter";
+import Runtime "mo:core/Runtime";
 import Time "mo:core/Time";
-import Order "mo:core/Order";
 import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-import Runtime "mo:core/Runtime";
 
 actor {
   include MixinStorage();
@@ -19,9 +17,17 @@ actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  type MovieId = Nat;
+  let movies = Map.empty<Nat, Movie>();
+  var nextId = 0;
+  let ITEMS_PER_PAGE = 10;
 
-  type Movie = {
+  public type UserProfile = {
+    name : Text;
+  };
+  let userProfiles = Map.empty<Principal, UserProfile>();
+
+  type MovieId = Nat;
+  public type Movie = {
     id : MovieId;
     title : Text;
     description : Text;
@@ -31,37 +37,12 @@ actor {
     createdAt : Time.Time;
   };
 
-  public type UserProfile = {
-    name : Text;
-  };
-
-  module Movie {
-    public func compareByTitle(a : Movie, b : Movie) : Order.Order {
-      Text.compare(a.title, b.title);
-    };
-
-    public func compareById(a : Movie, b : Movie) : Order.Order {
-      Nat.compare(a.id, b.id);
-    };
-
-    public func compareByCreatedAt(a : Movie, b : Movie) : Order.Order {
-      Int.compare(a.createdAt, b.createdAt);
-    };
-  };
-
-  let ITEMS_PER_PAGE = 10;
-  var nextId = 0;
-
-  var movies = Map.empty<MovieId, Movie>();
-  let userProfiles = Map.empty<Principal, UserProfile>();
-
   public query ({ caller }) func getAuthStatus() : async { caller : Principal } {
     {
       caller = caller;
     };
   };
 
-  // User profile management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -83,14 +64,13 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  // Add movie, only authenticated users
   public shared ({ caller }) func addMovie(
     title : Text,
     description : Text,
     photoBlobs : [Storage.ExternalBlob],
     genres : [Text],
   ) : async MovieId {
-    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can add movies");
     };
 
@@ -101,7 +81,7 @@ actor {
     let movieId = nextId;
     nextId += 1;
 
-    let newMovie : Movie = {
+    let movie : Movie = {
       id = movieId;
       title;
       description;
@@ -111,13 +91,12 @@ actor {
       createdAt = Time.now();
     };
 
-    movies.add(movieId, newMovie);
+    movies.add(movieId, movie);
     movieId;
   };
 
-  // Only authenticated users can delete, and only movie creator can delete their movie
   public shared ({ caller }) func deleteMovie(id : MovieId) : async () {
-    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can delete movies");
     };
 
@@ -149,33 +128,59 @@ actor {
   };
 
   public query ({ caller }) func getMovies(page : Nat) : async [Movie] {
-    let moviesList = movies.values().toArray().sort(Movie.compareByCreatedAt);
-    if (moviesList.size() < 1) { return [] };
-    let startIndex = page * ITEMS_PER_PAGE;
-    if (startIndex >= moviesList.size()) { return [] };
-    let endIndex = Nat.min(startIndex + ITEMS_PER_PAGE, moviesList.size());
-    moviesList.sliceToArray(startIndex, endIndex);
-  };
+    let moviesArray = movies.values().toArray();
+    let sortedMovies = moviesArray.sort(
+      func(a, b) {
+        if (a.createdAt < b.createdAt) { return #less };
+        if (a.createdAt > b.createdAt) { return #greater };
+        #equal;
+      }
+    );
 
-  public query ({ caller }) func filterByGenre(genre : Text) : async [Movie] {
-    let filtered = List.empty<Movie>();
-    for (movie in movies.values()) {
-      for (g in movie.genres.values()) {
-        if (g == genre) {
-          filtered.add(movie);
-        };
-      };
-    };
-    filtered.toArray();
+    if (sortedMovies.size() < 1) { return [] };
+    let start = page * ITEMS_PER_PAGE;
+    if (start >= sortedMovies.size()) { return [] };
+    let end = Nat.min(start + ITEMS_PER_PAGE, sortedMovies.size());
+    sortedMovies.sliceToArray(start, end);
   };
 
   public query ({ caller }) func getAllGenres() : async [Text] {
-    let genresSet = Map.empty<Text, ()>();
+    var genresSet = Map.empty<Text, ()>();
     for (movie in movies.values()) {
       for (genre in movie.genres.values()) {
         genresSet.add(genre, ());
       };
     };
     genresSet.keys().toArray();
+  };
+
+  public query ({ caller }) func filterByGenre(genre : Text) : async [Movie] {
+    let filteredMovies = movies.filter(
+      func(_id, movie) {
+        movie.genres.any(func(g) { g == genre });
+      }
+    );
+    filteredMovies.values().toArray();
+  };
+
+  public type PaginationInfo = {
+    totalPages : Nat;
+    itemsPerPage : Nat;
+    totalItems : Nat;
+  };
+
+  public query ({ caller }) func getPaginationInfo() : async PaginationInfo {
+    let totalItems = movies.size();
+    let totalPages = if (totalItems == 0) {
+      0;
+    } else {
+      (totalItems - 1) / ITEMS_PER_PAGE + 1;
+    };
+
+    {
+      totalPages;
+      itemsPerPage = ITEMS_PER_PAGE;
+      totalItems;
+    };
   };
 };

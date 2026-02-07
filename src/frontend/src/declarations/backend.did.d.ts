@@ -21,6 +21,11 @@ export interface Movie {
   'photos' : Array<ExternalBlob>,
 }
 export type MovieId = bigint;
+export interface PaginationInfo {
+  'totalPages' : bigint,
+  'totalItems' : bigint,
+  'itemsPerPage' : bigint,
+}
 export type Time = bigint;
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
@@ -70,6 +75,7 @@ export interface _SERVICE {
     { 'movie' : [] | [Movie], 'isCreator' : boolean }
   >,
   'getMovies' : ActorMethod<[bigint], Array<Movie>>,
+  'getPaginationInfo' : ActorMethod<[], PaginationInfo>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,

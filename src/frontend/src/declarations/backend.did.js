@@ -37,6 +37,11 @@ export const Movie = IDL.Record({
   'photos' : IDL.Vec(ExternalBlob),
 });
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const PaginationInfo = IDL.Record({
+  'totalPages' : IDL.Nat,
+  'totalItems' : IDL.Nat,
+  'itemsPerPage' : IDL.Nat,
+});
 
 export const idlService = IDL.Service({
   '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -88,6 +93,7 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getMovies' : IDL.Func([IDL.Nat], [IDL.Vec(Movie)], ['query']),
+  'getPaginationInfo' : IDL.Func([], [PaginationInfo], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -129,6 +135,11 @@ export const idlFactory = ({ IDL }) => {
     'photos' : IDL.Vec(ExternalBlob),
   });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const PaginationInfo = IDL.Record({
+    'totalPages' : IDL.Nat,
+    'totalItems' : IDL.Nat,
+    'itemsPerPage' : IDL.Nat,
+  });
   
   return IDL.Service({
     '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -180,6 +191,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getMovies' : IDL.Func([IDL.Nat], [IDL.Vec(Movie)], ['query']),
+    'getPaginationInfo' : IDL.Func([], [PaginationInfo], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],

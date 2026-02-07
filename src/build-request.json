@@ -1,82 +1,76 @@
 {
   "kind": "build_request",
-  "title": "Restore movie collection connectivity by restarting stopped backend canister and improving stopped-canister UX",
-  "priority": "high",
+  "title": "Add numbered pagination controls to movie grid",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Restore service by deploying an upgrade/build that brings backend canister `gnqlv-giaaa-aaaaq-awbrq-cai` back to a running state without losing existing movie data.",
+      "text": "Add a backend query that returns pagination metadata for the movie list so the frontend can render numbered page controls (at minimum: totalPages for the current ITEMS_PER_PAGE).",
       "target": "backend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "ДА"
+          "добавить нумерацию страниц чтоб можно было выбирать на какую переключить"
         ]
       },
       "acceptanceCriteria": [
-        "After the new version is deployed, calls such as `getMovies` no longer fail with \"Reject code: 5 ... Canister ... is stopped\" for canister `gnqlv-giaaa-aaaaq-awbrq-cai`.",
-        "Previously created movies are still returned by `getMovies` after the canister is running again (no data loss)."
+        "Backend exposes a new query method that returns the total number of pages for the movies collection based on ITEMS_PER_PAGE.",
+        "For 0 movies, totalPages is 0 (or 1 if the chosen UX requires it), and the method does not trap.",
+        "The method is query-only and does not mutate state."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update frontend error normalization to explicitly detect the \"canister is stopped\" (Reject code 5) failure and show a clear English message that the backend canister is stopped and the user should reload after it is restarted (instead of the generic “Connection is being established…” message).",
+      "text": "Update the frontend movie grid pagination UI to include clickable numbered page controls so users can directly jump to a specific page (while keeping existing Back/Next controls).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "ДА"
+          "добавить нумерацию страниц чтоб можно было выбирать на какую переключить"
         ]
       },
       "acceptanceCriteria": [
-        "When the replica returns an error containing text like \"Canister ... is stopped\" and/or \"Reject code: 5\", the Movies screen shows a specific English error message indicating the backend canister is stopped.",
-        "The UI continues to offer a recovery action (e.g., reload) from the error state."
+        "When not filtering by genre, the pagination area shows clickable page numbers and the current page is visually highlighted.",
+        "Clicking a page number loads that page via the existing paginated query and updates the current page indicator (page is 1-based in UI, but uses 0-based indexing internally).",
+        "Back/Next buttons continue to work and remain disabled appropriately at bounds (first/last page).",
+        "When a genre filter is active, numbered pagination controls are hidden (or disabled) consistently with the existing behavior (pagination is only for the unfiltered list).",
+        "If there are many pages, the UI does not render an excessively long row of buttons; it uses a compact windowed layout with ellipses (e.g., first/last + pages around current)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
+      "text": "Add a React Query hook to fetch the new backend pagination metadata and wire it into MovieGrid so the numbered pagination reflects the real total pages.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "ДА"
+          "добавить нумерацию страниц чтоб можно было выбирать на какую переключить"
         ]
       },
       "acceptanceCriteria": [
-        "Given a URL like `https://vhs-golden-era-movie-collection-7n6.caffeine.xyz/#caffeineAdminToken=TOKEN`, after app initialization the `caffeineAdminToken` is stored in sessionStorage and is removed from `window.location.hash` without a page reload.",
-        "Given a URL like `https://.../#/route?caffeineAdminToken=TOKEN&other=x`, after initialization the token is removed but `#/route?other=x` remains."
+        "A new query hook exists alongside useGetMovies/useFilterByGenre to fetch total pages (or equivalent) from the backend.",
+        "MovieGrid uses this metadata to determine the last page and to render the correct number of page buttons.",
+        "If the metadata request fails, MovieGrid still works with Back/Next pagination (graceful degradation), and errors follow the app’s existing error handling conventions."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in `backend/main.mo` (no additional backend services).",
-    "Do not edit files under `frontend/src/components/ui` or any other paths listed in `frontend.immutablePaths`.",
-    "All user-facing text introduced or modified by this change must be in English."
+    "Backend must remain a single Motoko actor in backend/main.mo; do not introduce additional backend services.",
+    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui; compose existing UI components instead."
   ],
   "nonGoals": [
-    "Adding new authentication providers (only Internet Identity remains).",
-    "Implementing external monitoring/alerting or third-party uptime services.",
-    "Changing the movie data model or adding new movie features beyond restoring connectivity and clearer errors."
+    "Adding pagination to genre-filtered results.",
+    "Changing ITEMS_PER_PAGE from 10.",
+    "Implementing infinite scroll or real-time updates."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

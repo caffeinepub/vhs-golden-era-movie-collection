@@ -89,10 +89,7 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface _CaffeineStorageRefillResult {
-    success?: boolean;
-    topped_up_amount?: bigint;
-}
+export type MovieId = bigint;
 export interface Movie {
     id: MovieId;
     title: string;
@@ -103,6 +100,11 @@ export interface Movie {
     photos: Array<ExternalBlob>;
 }
 export type Time = bigint;
+export interface PaginationInfo {
+    totalPages: bigint;
+    totalItems: bigint;
+    itemsPerPage: bigint;
+}
 export interface _CaffeineStorageRefillInformation {
     proposed_top_up_amount?: bigint;
 }
@@ -113,7 +115,10 @@ export interface _CaffeineStorageCreateCertificateResult {
 export interface UserProfile {
     name: string;
 }
-export type MovieId = bigint;
+export interface _CaffeineStorageRefillResult {
+    success?: boolean;
+    topped_up_amount?: bigint;
+}
 export enum UserRole {
     admin = "admin",
     user = "user",
@@ -142,6 +147,7 @@ export interface backendInterface {
         isCreator: boolean;
     }>;
     getMovies(page: bigint): Promise<Array<Movie>>;
+    getPaginationInfo(): Promise<PaginationInfo>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
@@ -390,6 +396,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getMovies(arg0);
             return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getPaginationInfo(): Promise<PaginationInfo> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPaginationInfo();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPaginationInfo();
+            return result;
         }
     }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {

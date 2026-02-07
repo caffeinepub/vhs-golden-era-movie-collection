@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useGetMovies, useFilterByGenre } from '../hooks/useQueries';
+import { useGetMovies, useFilterByGenre, useGetPaginationInfo } from '../hooks/useQueries';
 import MovieCard from './MovieCard';
 import MovieDetailDialog from './MovieDetailDialog';
+import PaginationControls from './PaginationControls';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Film, AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,6 +26,11 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
     isFetching: isPaginatedFetching,
     isFetched: isPaginatedFetched
   } = useGetMovies(page);
+
+  const {
+    data: paginationInfo,
+    error: paginationError,
+  } = useGetPaginationInfo();
   
   const { 
     data: filteredMovies, 
@@ -40,13 +46,19 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
   const isFetched = selectedGenre ? isFilteredFetched : isPaginatedFetched;
   const error = selectedGenre ? filteredError : paginatedError;
 
-  const hasNextPage = !selectedGenre && paginatedMovies && paginatedMovies.length === 10;
+  const totalPages = paginationInfo ? Number(paginationInfo.totalPages) : 0;
+  const hasNextPage = !selectedGenre && (paginationError ? paginatedMovies && paginatedMovies.length === 10 : page < totalPages - 1);
   const hasPrevPage = !selectedGenre && page > 0;
 
   const handleOpenDetail = (movie: Movie, photoIndex: number) => {
     setSelectedMovie(movie);
     setSelectedPhotoIndex(photoIndex);
     setIsDialogOpen(true);
+  };
+
+  const handlePageChange = (newPageIndex: number) => {
+    setPage(newPageIndex);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Show loading state during initial load or when actor is initializing
@@ -123,30 +135,40 @@ export default function MovieGrid({ selectedGenre }: MovieGridProps) {
       </div>
 
       {!selectedGenre && (hasNextPage || hasPrevPage) && (
-        <div className="flex justify-center items-center gap-8 pt-10">
-          <Button
-            onClick={() => setPage(p => p - 1)}
-            disabled={!hasPrevPage}
-            variant="outline"
-            className="bg-card/90 border-3 border-retro-teal text-retro-teal hover:bg-retro-teal/20 hover:text-retro-magenta hover:border-retro-magenta disabled:opacity-30 retro-subheading px-8 h-14 transition-all"
-          >
-            <ChevronLeft className="w-6 h-6 mr-2" />
-            BACK
-          </Button>
-          
-          <span className="text-retro-amber retro-heading text-xl retro-glow-amber">
-            ► {page + 1} ◄
-          </span>
-          
-          <Button
-            onClick={() => setPage(p => p + 1)}
-            disabled={!hasNextPage}
-            variant="outline"
-            className="bg-card/90 border-3 border-retro-teal text-retro-teal hover:bg-retro-teal/20 hover:text-retro-magenta hover:border-retro-magenta disabled:opacity-30 retro-subheading px-8 h-14 transition-all"
-          >
-            NEXT
-            <ChevronRight className="w-6 h-6 ml-2" />
-          </Button>
+        <div className="flex flex-col items-center gap-6 pt-10">
+          <div className="flex justify-center items-center gap-8">
+            <Button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={!hasPrevPage}
+              variant="outline"
+              className="bg-card/90 border-3 border-retro-teal text-retro-teal hover:bg-retro-teal/20 hover:text-retro-magenta hover:border-retro-magenta disabled:opacity-30 retro-subheading px-8 h-14 transition-all"
+            >
+              <ChevronLeft className="w-6 h-6 mr-2" />
+              BACK
+            </Button>
+            
+            <span className="text-retro-amber retro-heading text-xl retro-glow-amber">
+              ► {page + 1} ◄
+            </span>
+            
+            <Button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={!hasNextPage}
+              variant="outline"
+              className="bg-card/90 border-3 border-retro-teal text-retro-teal hover:bg-retro-teal/20 hover:text-retro-magenta hover:border-retro-magenta disabled:opacity-30 retro-subheading px-8 h-14 transition-all"
+            >
+              NEXT
+              <ChevronRight className="w-6 h-6 ml-2" />
+            </Button>
+          </div>
+
+          {!paginationError && totalPages > 1 && (
+            <PaginationControls
+              currentPageIndex={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       )}
 

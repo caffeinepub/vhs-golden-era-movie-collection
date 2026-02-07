@@ -1,45 +1,54 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Improve stopped-canister UX and hash secret cleanup",
+  "title": "Numbered pagination controls for MovieGrid",
   "requirements": [
     {
       "id": "REQ-2",
-      "summary": "Detect stopped backend canister (Reject code 5) in frontend error normalization and show a clear English message with reload recovery.",
+      "summary": "Add compact numbered pagination controls (with ellipses) to MovieGrid for the unfiltered movie list while keeping Back/Next behavior unchanged.",
       "acceptanceCriteria": [
-        "When the replica returns an error containing text like \"Canister ... is stopped\" and/or \"Reject code: 5\", the Movies screen shows a specific English error message indicating the backend canister is stopped.",
-        "The UI continues to offer a recovery action (e.g., reload) from the error state."
+        "When not filtering by genre, the pagination area shows clickable page numbers and the current page is visually highlighted.",
+        "Clicking a page number loads that page via the existing paginated query and updates the current page indicator (page is 1-based in UI, but uses 0-based indexing internally).",
+        "Back/Next buttons continue to work and remain disabled appropriately at bounds (first/last page).",
+        "When a genre filter is active, numbered pagination controls are hidden (or disabled) consistently with the existing behavior (pagination is only for the unfiltered list).",
+        "If there are many pages, the UI does not render an excessively long row of buttons; it uses a compact windowed layout with ellipses (e.g., first/last + pages around current)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/errors.ts",
-          "operation": "modify",
-          "description": "Update normalizeError() to explicitly detect replica rejection cases indicating a stopped canister (e.g., message contains \"reject code: 5\" and/or \"canister\" + \"stopped\") and return a specific English user-facing message instructing the user to reload after the backend is restarted. Ensure existing generic 'Connection is being established…' is not used for this stopped-canister case."
+          "path": "frontend/src/components/PaginationControls.tsx",
+          "operation": "create",
+          "description": "Create a reusable PaginationControls component that renders a compact, windowed set of numbered page buttons with ellipses and highlights the current page. It should accept currentPageIndex (0-based), totalPages (number), and onPageChange, and use existing shadcn-ui Button styling already present in the app. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/components/MovieGrid.tsx",
           "operation": "modify",
-          "description": "Ensure the Movies error state continues to surface normalizeError() output and retains a recovery action (reload). If needed, adjust copy/layout to keep the stopped-canister message clearly visible in English without changing immutable UI component paths (Verify the component's usage instructions before implementing)."
+          "description": "Update MovieGrid to render PaginationControls alongside the existing Back/Next controls when selectedGenre is null. Ensure page number clicks call setPage with 0-based indices, current page is highlighted, and numbered controls are hidden when a genre filter is active."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add/adjust minimal global utility classes (if needed) to support the visual highlighting of the active page number and compact pagination spacing consistent with the existing retro theme, without modifying any files under frontend/src/components/ui."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Clear caffeineAdminToken from URL hash for both '#token=value' and '#/route?token=value' forms while preserving other hash route/query content, without reloading.",
+      "summary": "Add a React Query hook for pagination metadata and wire it into MovieGrid to determine total pages and last-page bounds, with graceful fallback if metadata fails.",
       "acceptanceCriteria": [
-        "Given a URL like `https://vhs-golden-era-movie-collection-7n6.caffeine.xyz/#caffeineAdminToken=TOKEN`, after app initialization the `caffeineAdminToken` is stored in sessionStorage and is removed from `window.location.hash` without a page reload.",
-        "Given a URL like `https://.../#/route?caffeineAdminToken=TOKEN&other=x`, after initialization the token is removed but `#/route?other=x` remains."
+        "A new query hook exists alongside useGetMovies/useFilterByGenre to fetch total pages (or equivalent) from the backend.",
+        "MovieGrid uses this metadata to determine the last page and to render the correct number of page buttons.",
+        "If the metadata request fails, MovieGrid still works with Back/Next pagination (graceful degradation), and errors follow the app’s existing error handling conventions."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/urlParams.ts",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Fix secret extraction and hash cleanup logic to support both hash-only parameters without '?' (e.g., '#caffeineAdminToken=TOKEN') and hash routes with query strings (e.g., '#/route?caffeineAdminToken=TOKEN&other=x'). Update getSecretFromHash() to read the token from the correct hash segment, and update clearParamFromHash() to remove only the specified key while preserving any existing route/hash content and other parameters, using history.replaceState with no page reload."
+          "description": "Add a new React Query hook (e.g., useGetPaginationInfo or useGetTotalPages) that calls the existing backend capability for pagination metadata and returns loading/error states consistent with other hooks in this file."
         },
         {
-          "path": "frontend/src/hooks/useActor.ts",
+          "path": "frontend/src/components/MovieGrid.tsx",
           "operation": "modify",
-          "description": "Ensure getSecretParameter('caffeineAdminToken') is executed during app initialization even when the user is not authenticated, so the token is stored in sessionStorage and removed from window.location.hash immediately. Keep passing the token only where needed for actor initialization, but always perform the read/cleanup step."
+          "description": "Wire the new pagination-metadata hook into MovieGrid (only for unfiltered browsing) to compute totalPages/lastPageIndex and drive numbered page rendering + Back/Next disabled state. Implement graceful degradation: if metadata is unavailable or errors, keep existing Back/Next behavior based on page bounds heuristic (e.g., page>0 and paginatedMovies.length===10) and avoid showing incorrect numbered controls."
         }
       ]
     }

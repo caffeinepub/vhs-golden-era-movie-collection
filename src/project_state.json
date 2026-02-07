@@ -1,27 +1,22 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Troubleshooting an Internet Computer (Caffeine) app for a VHS movie collection where the backend canister is stopped, causing the frontend to fail loading movies; user confirmed the backend canister ID so the fix can proceed.",
-  "architectural_notes": [
-    "Frontend depends on an IC backend canister; if the canister is stopped, all queries fail and the UI appears stuck establishing connection.",
-    "Only a canister controller can start/restart a stopped canister; resolving requires restarting or redeploying the backend canister."
-  ],
-  "known_issues": [
-    "Backend canister (gnqlv-giaaa-aaaaq-awbrq-cai) is stopped, causing connection failures and movies not loading."
-  ],
-  "isFixRequest": true,
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-frontend-error-normalization-to-explicitly-detect-the-canister-is-stopped-reject-code-5-failure-and-show-a-clear-english-message-that-the-backend-canister-is-stopped-and-the-user-should-reload-after-it-is-restarted-instead-of-the-generic-connection-is-being-established-message",
-      "title": "Update frontend error normalization to explicitly detect the \"canister is stopped\" (Reject code 5) failure and show a clear English message that the backend canister is stopped and the user should reload after it is restarted (instead of the generic “Connection is being established…” message).",
+      "id": "feature-update-the-frontend-movie-grid-pagination-ui-to-include-clickable-numbered-page-controls-so-users-can-directly-jump-to-a-specific-page-while-keeping-existing-back-next-controls",
+      "title": "Update the frontend movie grid pagination UI to include clickable numbered page controls so users can directly jump to a specific page (while keeping existing Back/Next controls).",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-fix-url-hash-secret-cleanup-so-that-caffeineadmintoken-hash-parameters-without-a-is-also-cleared-from-the-address-bar-after-being-read-and-stored-in-sessionstorage-while-preserving-other-hash-content-routes-when-present",
-      "title": "Fix URL hash secret cleanup so that `#caffeineAdminToken=...` (hash parameters without a `?`) is also cleared from the address bar after being read and stored in sessionStorage, while preserving other hash content/routes when present.",
+      "id": "feature-add-a-react-query-hook-to-fetch-the-new-backend-pagination-metadata-and-wire-it-into-moviegrid-so-the-numbered-pagination-reflects-the-real-total-pages",
+      "title": "Add a React Query hook to fetch the new backend pagination metadata and wire it into MovieGrid so the numbered pagination reflects the real total pages.",
       "reqIds": [
         "REQ-3"
       ],
@@ -31,15 +26,20 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Restore service by deploying an upgrade/build that brings backend canister `gnqlv-giaaa-aaaaq-awbrq-cai` back to a running state without losing existing movie data.",
+      "summary": "Add page number pagination controls so users can select which page to switch to",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add a backend query that returns pagination metadata for the movie list so the frontend can render numbered page controls (at minimum: totalPages for the current ITEMS_PER_PAGE).",
       "reqIds": [
         "REQ-1"
       ],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "VHS Golden Era Movie Collection",
+  "projectName": "Add numbered pagination controls to movie grid",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

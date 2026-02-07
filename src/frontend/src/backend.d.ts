@@ -14,6 +14,7 @@ export class ExternalBlob {
     static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
+export type MovieId = bigint;
 export interface Movie {
     id: MovieId;
     title: string;
@@ -24,10 +25,14 @@ export interface Movie {
     photos: Array<ExternalBlob>;
 }
 export type Time = bigint;
+export interface PaginationInfo {
+    totalPages: bigint;
+    totalItems: bigint;
+    itemsPerPage: bigint;
+}
 export interface UserProfile {
     name: string;
 }
-export type MovieId = bigint;
 export enum UserRole {
     admin = "admin",
     user = "user",
@@ -49,6 +54,7 @@ export interface backendInterface {
         isCreator: boolean;
     }>;
     getMovies(page: bigint): Promise<Array<Movie>>;
+    getPaginationInfo(): Promise<PaginationInfo>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
