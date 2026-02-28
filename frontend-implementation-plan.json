@@ -1,0 +1,54 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix catalog page loading failure",
+  "requirements": [
+    {
+      "id": "REQ-2",
+      "summary": "Fix the MovieGrid component and its associated React Query hooks (useQueries.ts) so that the catalog page renders correctly once the backend is available. Ensure loading, error, and empty states are handled gracefully and do not leave the page blank or stuck in a loading loop.",
+      "acceptanceCriteria": [
+        "The catalog page displays a grid of movie cards when the backend returns data.",
+        "A clear error message is shown if the backend is genuinely unavailable, rather than a blank page.",
+        "Pagination controls appear and work when there are multiple pages of movies.",
+        "Genre filter queries work and update the displayed movies without a page reload."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Review and fix all React Query hooks (useMovies, usePaginationInfo, useFilterByGenre) to ensure they properly handle backend unavailability, loading states, and error conditions. Ensure queries are enabled only when the actor is available and properly report backend errors to the BackendAvailabilityContext. Add proper retry logic and stale time configuration to prevent infinite loading loops. Verify error detection using isBackendUnavailable utility and ensure all queries properly propagate errors to consuming components."
+        },
+        {
+          "path": "frontend/src/components/MovieGrid.tsx",
+          "operation": "modify",
+          "description": "Fix the MovieGrid component to properly handle all loading, error, and empty states without leaving the page blank. Ensure the component correctly responds to backend availability state from BackendAvailabilityContext. Add proper conditional rendering for: actor not yet initialized, backend checking health, backend unavailable (defer to BackendUnavailableScreen), data loading, query errors (with user-friendly Russian messages), empty results, and successful data display. Ensure pagination controls only render when pagination data is available and there are multiple pages. Fix any race conditions or infinite loops in the rendering logic."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Review and fix the App.tsx root component to ensure proper orchestration of backend availability checking and loading states. Verify that BackendAvailabilityProvider wraps the app correctly and that the conditional rendering logic (loading spinner → BackendUnavailableScreen → main app) works properly. Ensure the loading state doesn't get stuck and that BackendUnavailableScreen is shown when appropriate. Fix any race conditions between actor initialization, backend health checks, and component rendering."
+        },
+        {
+          "path": "frontend/src/context/BackendAvailabilityContext.tsx",
+          "operation": "modify",
+          "description": "Review and fix the BackendAvailabilityContext to ensure it correctly tracks backend state transitions (checking → available/unavailable) and properly handles the auto-retry countdown mechanism. Verify that reportBackendError correctly identifies genuine backend failures versus transient network issues. Ensure the context doesn't report false positives for backend unavailability during normal operation. Fix any issues with the retry logic that might cause perpetual checking or missed availability state changes."
+        },
+        {
+          "path": "frontend/src/hooks/useBackendHealth.ts",
+          "operation": "modify",
+          "description": "Fix the useBackendHealth hook to ensure it properly polls the backend health check endpoint and correctly interprets responses. Verify that isHealthy, isChecking states are accurate and that the refetch mechanism works reliably. Ensure the hook integrates properly with BackendAvailabilityContext and doesn't cause false unavailability reports. Add proper error handling for network failures versus backend canister errors."
+        },
+        {
+          "path": "frontend/src/utils/errors.ts",
+          "operation": "modify",
+          "description": "Review and enhance the isBackendUnavailable utility to ensure it correctly identifies all backend failure scenarios (stopped canister, uninitialized actor, network errors, trap errors) without false positives. Verify that normalizeError produces clear, actionable Russian error messages for all failure modes. Add any missing error patterns that might be causing the catalog page to fail silently."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Fix the Header component to ensure genre filter dropdown works correctly and doesn't cause the catalog page to fail. Verify that genre loading errors are handled gracefully and reported to BackendAvailabilityContext only for genuine backend failures. Ensure the add-movie button and auth controls don't interfere with catalog page rendering."
+        }
+      ]
+    }
+  ]
+}

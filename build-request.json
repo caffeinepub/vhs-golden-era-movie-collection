@@ -1,0 +1,58 @@
+{
+  "kind": "build_request",
+  "title": "Fix catalog page loading failure",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Audit and fix the backend Motoko actor to resolve the crash or error that prevents the catalog page from loading. Ensure all public query and update methods (especially movie listing, pagination, and genre filtering) return valid responses without trapping or throwing unhandled errors.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "страница каталога не загружается."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The backend canister responds successfully to health check calls.",
+        "Movie listing queries return data without trapping.",
+        "Pagination and genre filter queries complete without errors.",
+        "The BackendAvailabilityContext reports the backend as 'available' on page load."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Fix the MovieGrid component and its associated React Query hooks (useQueries.ts) so that the catalog page renders correctly once the backend is available. Ensure loading, error, and empty states are handled gracefully and do not leave the page blank or stuck in a loading loop.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "страница каталога не загружается."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The catalog page displays a grid of movie cards when the backend returns data.",
+        "A clear error message is shown if the backend is genuinely unavailable, rather than a blank page.",
+        "Pagination controls appear and work when there are multiple pages of movies.",
+        "Genre filter queries work and update the displayed movies without a page reload."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify files listed in frontend.immutablePaths.",
+    "Keep all backend logic in the single main.mo actor file."
+  ],
+  "nonGoals": [
+    "Adding new movie features or fields.",
+    "Changing the visual design or theme.",
+    "Modifying authentication or user profile logic."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

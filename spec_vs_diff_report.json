@@ -1,0 +1,18 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-28T08:55:06.296Z",
+  "summary": "The diff addresses both REQ-1 (backend Motoko actor fixes) and REQ-2 (frontend MovieGrid and React Query hooks). The backend main.mo includes health check, movie listing, pagination, and genre filtering methods. The frontend has been updated with proper loading/error/empty states, pagination controls, genre filtering, and backend unavailability reporting. All major acceptance criteria appear to be covered by the changes.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.82,
+  "changed_files": [
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/MovieGrid.tsx",
+    "frontend/src/context/BackendAvailabilityContext.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "project_state.json"
+  ]
+}
